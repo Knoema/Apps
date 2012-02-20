@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
 	<PropertyGroup>
 		<BuildLabel>1.2.3.23432</BuildLabel>
-		<DeployPackageLocation>..\Outputs</DeployPackageLocation>
+		<DeployPackageLocation>Outputs</DeployPackageLocation>
 		<S3ToolLocation>../Lib/Amazons3/S3.exe</S3ToolLocation>
 		<S3DestinationFolder>knoema/builds/apps-$(BuildLabel)/</S3DestinationFolder>
 		<AccessKeyId>AKIAJ6JSTCAYSRY2EXVA</AccessKeyId>
