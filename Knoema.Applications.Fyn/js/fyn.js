@@ -99,32 +99,39 @@ apps.findYourNumber = function () {
 		'External debt, total (Percent of GDP)',
 		'Crude Oil (petroleum), Simple average of three spot prices (APSP); Dated Brent, West Texas Intermediate, and the Dubai Fateh (Dollars per barrel)'
 	];
+	
  };
 
 apps.findYourNumber.prototype.init = function () {
- 	
+
+	utils.clientId = 'fsSa7bQ=';
+	this.appStart();
+};
+
+apps.findYourNumber.prototype.appStart = function(){
 	this.getCountries();
- 	this.getIndicators();
- 	this.getTime();
+	this.getIndicators();
+	this.getTime();
 
- 	$('div.step-container ul li').click($.proxy(function (item) {
- 		this.selectionChanged(item.target);
- 	}, this));
+	$('div.step-container ul li').click($.proxy(function (item) {
+		this.selectionChanged(item.target);
+	}, this));
 
- 	$('div#options div').click($.proxy(function (item) {
- 		this.visualizationChanged(item.target);
- 	}, this));
-
+	$('div#options div').click($.proxy(function (item) {
+		this.visualizationChanged(item.target);
+	}, this));
 };
 
 apps.findYourNumber.prototype.getCountries = function () {
 
-	var container = $('div#list-country');	
-	$(container).getRequest('/api/meta/dataset/' + this.datasets[0].name + '/dimension/Country', $.proxy(function (result) {
+	var container = $('div#list-country');
+	utils.setLoadingState(container);
+
+	$(container).getRequest('/api/1.0/meta/dataset/' + this.datasets[0].name + '/dimension/Country', $.proxy(function (result) {
 
 		var countries = [];
-		$.each(result.Items, function () {
-			countries.push(this.Name);
+		$.each(result.items, function () {
+			countries.push(this.name);
 		});
 
 		if (countries.length > 0) {
@@ -151,6 +158,9 @@ apps.findYourNumber.prototype.getCountries = function () {
 				this.selectionChanged(item.target);
 			}, this));
 		};
+
+		utils.removeLoadingState(container);
+
 	}, this));
 };
 
@@ -160,23 +170,25 @@ apps.findYourNumber.prototype.getIndicators = function (i) {
 		i = 0;
 
 	var container = $('div#list-indicator');
+	utils.setLoadingState(container);
+
 	var ul = $(utils.buildHTML('ul', { 'id': 'indicators' })).appendTo(container);
 
 	var dataset = this.datasets[i].name;
 	var dimension = this.datasets[i].dimension;
 
-	$(container).getRequest('/api/meta/dataset/' + dataset + '/dimension/' + dimension, $.proxy(function (result) {
-		$.each(result.Items, $.proxy(function (index, item) {
+	$(container).getRequest('/api/1.0/meta/dataset/' + dataset + '/dimension/' + dimension, $.proxy(function (result) {
+		$.each(result.items, $.proxy(function (index, item) {
 
-			if (this.inIndicators(item.Name))
+			if (this.inIndicators(item.name))
 				$(utils.buildHTML('li',
 					{
-						'id': item.Key,
-						'unit': this.getUnits(item.Name),
+						'id': item.key,
+						'unit': this.getUnits(item.name),
 						'dataset': dataset,
 						'dimension': dimension
 					})).appendTo(ul)
-							.append(item.Name)
+							.append(item.name)
 								.click($.proxy(function (item) {
 									this.selectionChanged(item.target);
 								}, this));
@@ -186,7 +198,9 @@ apps.findYourNumber.prototype.getIndicators = function (i) {
 		if (i < this.datasets.length - 1) {
 			i++;
 			this.getIndicators(i);
-		}
+		};
+
+		utils.removeLoadingState(container);
 
 	}, this));
 };
@@ -211,17 +225,19 @@ apps.findYourNumber.prototype.getNumber = function () {
 
 		// Get number
 		var container = $('div#result');
+		utils.setLoadingState(container);
+
 		$(container).postRequest(dataDescriptor, $.proxy(function (pivotResponse) {
 
 			$(container).html('');
 			$(container).removeClass();
 
-			if (pivotResponse.Data.length > 0) {
+			if (pivotResponse.data.length > 0) {
 
 				$(container).addClass('number');
 
 				// Round number and devide into digits
-				var number = utils.roundToNDecimalPlaces(pivotResponse.Data[0].Value, 2);
+				var number = utils.roundToNDecimalPlaces(pivotResponse.data[0].Value, 2);
 				$(container).append(number.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 '))
 
 				// Append to container
@@ -236,7 +252,10 @@ apps.findYourNumber.prototype.getNumber = function () {
 				$(utils.buildHTML('div', { 'class': 'no-number' }))
 				.appendTo(container)
 					.html('Your current selection does not contain any data');
-			}
+			};
+
+			utils.removeLoadingState(container);
+
 		}, this));
 	};
 };
@@ -361,12 +380,13 @@ apps.findYourNumber.prototype.table = function (container) {
 };
 
 apps.findYourNumber.prototype.map = function (container) {
-
-	$(container).getRequest('/api/meta/dataset/' + this.dataset + '/dimension/Country', $.proxy(function (result) {
+	
+	utils.setLoadingState(container);
+	$(container).getRequest('/api/1.0/meta/dataset/' + this.dataset + '/dimension/Country', $.proxy(function (result) {
 
 		var countries = [];
-		$.each(result.Items, function () {
-			countries.push(this.Key.toString());
+		$.each(result.items, function () {
+			countries.push(this.key.toString());
 		});
 
 		var data =
@@ -381,8 +401,10 @@ apps.findYourNumber.prototype.map = function (container) {
 				width: 245,
 				height: 160
 			}
-		};	
+		};
+
 		$(container).gadgetRequest(data);
+		utils.removeLoadingState(container);
 
 	}, this));
 };
@@ -415,9 +437,9 @@ apps.findYourNumber.prototype.getDataDescriptor = function (countries, indicator
 apps.findYourNumber.prototype.getKey = function (array, name) {
 
 	var result = null;
-	$.each(array.Items, function () {
-		if (this.Name == name) {
-			result = this.Key;
+	$.each(array.items, function () {
+		if (this.name == name) {
+			result = this.key;
 		};
 	});
 
@@ -457,6 +479,7 @@ apps.findYourNumber.prototype.selectionChanged = function (item) {
 	this.getNumber();
 };
 
+var filter = '';	
 apps.findYourNumber.prototype.isValidParameters = function () {
 
 	if (this.country != null && this.indicator != null && this.time != null)
@@ -464,23 +487,24 @@ apps.findYourNumber.prototype.isValidParameters = function () {
 	else return false;
 };
 
-var filter = '';
-$('input#filter-country, input#filter-indicator, input#filter-time').mousedown(function () {
-	$(this).css('color', '#222');
-	if ($(this).val() == 'Just type...')
-		$(this).val('');
-});
+apps.findYourNumber.prototype.applyFilters = function(){
+	$('input#filter-country, input#filter-indicator, input#filter-time').mousedown(function () {
+		$(this).css('color', '#222');
+		if ($(this).val() == 'Just type...')
+			$(this).val('');
+	});
 
-$('input#filter-country, input#filter-indicator, input#filter-time').live('keyup', function () {
-	var val = $(this).val().toLowerCase();
-	if (filter != val) {
-		filter = val;
-		$(this).parent().find('ul li').each(function () {
-			if ((filter == '') || $(this).text().toLowerCase().indexOf(filter) != -1)
-				$(this).show();
-			else
-				$(this).hide();
-		});
-	};
-});
+	$('input#filter-country, input#filter-indicator, input#filter-time').live('keyup', function () {
+		var val = $(this).val().toLowerCase();
+		if (filter != val) {
+			filter = val;
+			$(this).parent().find('ul li').each(function () {
+				if ((filter == '') || $(this).text().toLowerCase().indexOf(filter) != -1)
+					$(this).show();
+				else
+					$(this).hide();
+			});
+		};
+	});
+};
 

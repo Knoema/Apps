@@ -2,12 +2,19 @@
 
 apps.forecastTrackingTool = function () {
 	
-	this.countriesUrl ='/api/meta/dataset/AEF2011OCT/dimension/Country';
-	this.indicatorsUrl = '/api/meta/dataset/AEF2011OCT/dimension/Indicator';
-	this.sourcesUrl = '/api/meta/dataset/AEF2011OCT/dimension/Source';
+	this.countriesUrl ='/api/1.0/meta/dataset/AEF2011OCT/dimension/Country';
+	this.indicatorsUrl = '/api/1.0/meta/dataset/AEF2011OCT/dimension/Indicator';
+	this.sourcesUrl = '/api/1.0/meta/dataset/AEF2011OCT/dimension/Source';
 
 	this.constants = this.constants();
-	this.selectedSource = null;
+	this.selectedSource = null;	
+};
+
+apps.forecastTrackingTool.prototype.init = function (callback) {
+	
+	utils.clientId = 'B6O/Vg=';
+	callback();				
+
 };
 
 apps.forecastTrackingTool.prototype.loadGroupOfSeven = function (indicator) {
@@ -25,39 +32,53 @@ apps.forecastTrackingTool.prototype.loadGroupOfSeven = function (indicator) {
 					this.getMeasureLatestFigures().value
 				);
 
-		var container = country;		
+		var container = country;	
+		utils.setLoadingState($('div#' + container));	
 		$('div#' + container).postRequest(dataDescriptor, $.proxy(function(pivotResponse){
+
 				var series = this.getTimeSeries(dataDescriptor, pivotResponse, true);
 				charts.drawLines(container, series, this.getConstant('Precision'));
+
+				utils.setLoadingState(container);
+
 			}, this));		
 	}, this));
 };
 
-apps.forecastTrackingTool.prototype.loadCountries = function () {
+apps.forecastTrackingTool.prototype.loadCountries = function (callback) {
 
 	var container = $('div#countries');
+
+	utils.setLoadingState(container);
+
 	$(container).getRequest(this.countriesUrl, function (result) {
-		$.each(result.Items, function () {
-			var href = 'explore.html?country=' + this.Key;
-			$(utils.buildHTML('a', { 'href': href, 'countryId': this.Key }))
+		$.each(result.items, function () {
+			var href = 'explore.html?country=' + this.key;
+			$(utils.buildHTML('a', { 'href': href, 'countryId': this.key }))
 				.appendTo($(utils.buildHTML('div'))
-					.appendTo(container)).text(this.Name);
+					.appendTo(container)).text(this.name);
 		});
+		callback();		
+		utils.removeLoadingState(container);
 	});
 };
 
-apps.forecastTrackingTool.prototype.loadIndicators = function () {
+apps.forecastTrackingTool.prototype.loadIndicators = function (callback) {
 
 	var container = $('div#indicators');	
+	utils.setLoadingState(container);
+
 	$(container).getRequest(this.indicatorsUrl, function (result) {
-		$.each(result.Items, function () {
-			if (this.Level > 0) {
-				var href = 'explore.html?indicator=' + this.Key;
-				$(utils.buildHTML('a', { 'href': href, 'countryId': this.Key }))
+		$.each(result.items, function () {
+			if (this.level > 0) {
+				var href = 'explore.html?indicator=' + this.key;
+				$(utils.buildHTML('a', { 'href': href, 'countryId': this.key }))
 					.appendTo($(utils.buildHTML('div'))
-						.appendTo(container)).text(this.Name);
+						.appendTo(container)).text(this.name);
 			}
 		});
+		utils.removeLoadingState(container);
+		callback();
 	});
 };
 
@@ -87,23 +108,25 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 	var measureTwoYears = app.getMeasureAbsoluteErrorForTwoYears();
 
 	var container = $('div#table');	
+	utils.setLoadingState(container);
+
 	$(container).getRequest(app.sourcesUrl, function (datasetSources) {
 		$(container).getRequest(app.countriesUrl, function (datasetCountries) {
 
 			// Get sources for data descriptor 
-			var sources = app.getKeys(datasetSources.Items);
+			var sources = app.getKeys(datasetSources.items);
 
 			// Get countries for data descriptor 
-			var countries = app.getKeys(datasetCountries.Items);
+			var countries = app.getKeys(datasetCountries.items);
 
 			var dataDescriptor = app.getDataDescriptor([time], sources, countries, indicatorId, [measureYear.value, measureTwoYears.value]);
 			$(container).postRequest(dataDescriptor, function (pivotResponse) {
 				
-				if (pivotResponse.Data.length > 0)
+				if (pivotResponse.data.length > 0)
 				{
 					// Group data by countries
 					var data = [];
-					$.each(pivotResponse.Data, function (index, item) {
+					$.each(pivotResponse.data, function (index, item) {
 						app.pushErrorForecastingData(data, item);
 					});
 			
@@ -179,6 +202,8 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 				}
 				else 
 					app.showNoDataMessage('div#table');
+
+				utils.removeLoadingState(container);
 			});				
 		});
 	});		
@@ -203,25 +228,27 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 		}
 
 		var container = $('#map');	
+		utils.setLoadingState(container);
+
 		$(container).getRequest(app.sourcesUrl, function (datasetSources) {
 			$(container).getRequest(app.countriesUrl, function (datasetCountries) {
 
 				// Get sources for data descriptor 
-				var sources = app.getKeys(datasetSources.Items);
+				var sources = app.getKeys(datasetSources.items);
 
 				// Get countries for data descriptor 
-				var countries = app.getKeys(datasetCountries.Items);
+				var countries = app.getKeys(datasetCountries.items);
 
 				var dataDescriptor = app.getDataDescriptor([time], sources, countries, indicatorId, measureId);
 				dataDescriptor.RegionIdsRequired = true;
 			
 				$(container).postRequest(dataDescriptor, function (pivotResponse) {
 
-					if (pivotResponse.Data.length > 0)
+					if (pivotResponse.data.length > 0)
 					{
 						// Group data by countries
 						var data = [];
-						$.each(pivotResponse.Data, function (index, item) {
+						$.each(pivotResponse.data, function (index, item) {
 							app.pushErrorForecastingData(data, item);
 						});
 			
@@ -230,8 +257,8 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 						var sources = [];					
 						$.each(data, function () {
 					
-							for (i in pivotResponse.Regions) {
-								if (pivotResponse.Regions[i] === this.Country) {
+							for (i in pivotResponse.regions) {
+								if (pivotResponse.regions[i] === this.Country) {
 							
 									var item = this.MinErrorOne;
 									if (measureId == app.getMeasureAbsoluteErrorForTwoYears().value)
@@ -269,6 +296,8 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 					}
 					else 
 						app.showNoDataMessage('div#map');
+
+					utils.removeLoadingState(container);
 				});					
 			});
 		});
@@ -278,6 +307,9 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 }
 apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indicatorId) {
 
+	var container = $('div#countries');
+	utils.setLoadingState(container);
+
 	$('div#parameter div.country div').text('Country');
 	this.setIndicatorName(indicatorId);
 
@@ -285,16 +317,15 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 	$('div#visualization').html('');
 
 	var app = this;
-
-	var container = $('div#countries');
+	
 	$(container).getRequest(app.sourcesUrl, function (datasetSources) {
 		$(container).getRequest(app.countriesUrl, function (datasetCountries) {
 
 			// Get sources for data descriptor 
-			var sources = app.getKeys(datasetSources.Items);
+			var sources = app.getKeys(datasetSources.items);
 
 			// Get countries for data descriptor 
-			var countries = app.getKeys(datasetCountries.Items);
+			var countries = app.getKeys(datasetCountries.items);
 
 			// Get available countries and sources for selected indicator and measure "latest figures"
 			var dataDescriptor = app.getDataDescriptor(
@@ -327,26 +358,26 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 
 						// Group sources by countries
 						var arrayLatestFigures = [];
-						$.each(responseLatestFigures.Data, function (index, data) {
+						$.each(responseLatestFigures.data, function (index, data) {
 							if (data.Value != null)
 								app.pushData(arrayLatestFigures, data.Country, data.Source);
 						});
 
 						var arrayAbsoluteErrorForYear = [];
-						$.each(responseAbsoluteErrorForYear.Data, function (index, data) {
+						$.each(responseAbsoluteErrorForYear.data, function (index, data) {
 							if (data.Value != null)
 								app.pushData(arrayAbsoluteErrorForYear, data.Country, data.Source);
 						});
 
 						var arrayAbsoluteErrorForTwoYears = [];
-						$.each(responseAbsoluteErrorForTwoYear.Data, function (index, data) {
+						$.each(responseAbsoluteErrorForTwoYear.data, function (index, data) {
 							if (data.Value != null)
 								app.pushData(arrayAbsoluteErrorForTwoYears, data.Country, data.Source);
 						});
 
 						// Display countries and sources
 						$.each(arrayLatestFigures, function (index, latestFigure) {
-							var countyId = app.getKey(datasetCountries.Items, latestFigure.Parameter);
+							var countyId = app.getKey(datasetCountries.items, latestFigure.Parameter);
 
 							$(utils.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#countries')).text(latestFigure.Parameter);
 							var divSources = $(utils.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#agencies'));
@@ -358,7 +389,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 								$(utils.buildHTML('a', { 'class': 'source-color', 'style': 'background-color:#' + app.getSource(app.getSourceShortName(source)).Color }))
 									.appendTo($(divSources));
 
-								$(utils.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.Items, source) }))
+								$(utils.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.items, source) }))
 									.appendTo($(divSources))
 										.text(source.split(' ')[0]);
 
@@ -369,10 +400,10 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 							var divHorizon = $(utils.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#horizons'));
 
 							// Display sources that have "forecasting error for 1 year" data 							
-							app.displayErrorsForIndicator(arrayAbsoluteErrorForYear, latestFigure, datasetSources.Items, '1-year', divHorizon);
+							app.displayErrorsForIndicator(arrayAbsoluteErrorForYear, latestFigure, datasetSources.items, '1-year', divHorizon);
 
 							// Display sources that have "forecasting error for 2 year" data 
-							app.displayErrorsForIndicator(arrayAbsoluteErrorForTwoYears, latestFigure, datasetSources.Items, '2-years', divHorizon);
+							app.displayErrorsForIndicator(arrayAbsoluteErrorForTwoYears, latestFigure, datasetSources.items, '2-years', divHorizon);
 
 						});
 
@@ -391,6 +422,8 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 								app.drawForecastingError(container, $(this).parent().attr('id'), indicatorId, availableSources, $(this).attr('id'));
 							}
 						});
+
+						utils.removeLoadingState(container);
 					});
 				});
 			});
@@ -411,7 +444,12 @@ apps.forecastTrackingTool.prototype.displayErrorsForIndicator = function(items, 
 		});
 
 		if (availableSources.length > 0){
-			$(utils.buildHTML('span', { 'class': 'year', 'id': '1', 'sources': availableSources.toString() }))
+		
+			var id = '1';
+			if (text == "2-years")
+				id = '2';
+
+			$(utils.buildHTML('span', { 'class': 'year', 'id': id, 'sources': availableSources.toString() }))
 				.appendTo($(container)).text(text);
 		}
 		else
@@ -420,23 +458,25 @@ apps.forecastTrackingTool.prototype.displayErrorsForIndicator = function(items, 
 
 apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countryId) {
 
-	$('div#parameter div.country div').text('Country');
+	var container = $('div#countries');	
+	utils.setLoadingState(container);
+
+	$('div#parameter div.country div').text('Indicator');
 	this.setCountryName(countryId);
 
 	$('div#agencies').html('');
 	$('div#visualization').html('');
 
 	var app = this;
-	var container = $('div#countries');	
-	
+
 	$(container).getRequest(this.sourcesUrl, function (datasetSources) {
 		$(container).getRequest(app.indicatorsUrl, function (datasetIndicators) {
 
 			// Get indicators for data descriptor 
-			var indicators = app.getKeys(datasetIndicators.Items);
+			var indicators = app.getKeys(datasetIndicators.items);
 
 			// Get sources for data descriptor 
-			var sources = app.getKeys(datasetSources.Items);
+			var sources = app.getKeys(datasetSources.items);
 
 			// Get available indicators and sources for selected country and measures "latest figures" and "absolute error"
 			var dataDescriptor = app.getDataDescriptor(app.getTimeRange(app.getConstant('First year for getting sources'), app.getConstant('Last year')), sources, countryId, indicators,
@@ -449,7 +489,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 
 				// Group sources by indicators
 				var array = [];
-				$.each(pivotResponse.Data, function (index, data) {
+				$.each(pivotResponse.data, function (index, data) {
 					if (data.Value != null && data.Measure == "Latest figures") {
 						app.pushData(array, data.Indicator, data.Source);
 					}
@@ -458,7 +498,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 				// Display indicators and sources
 				$.each(array, function (index, indicator) {
 
-					var parameterId = app.getKey(datasetIndicators.Items, indicator.Parameter);
+					var parameterId = app.getKey(datasetIndicators.items, indicator.Parameter);
 
 					$(utils.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#countries')).text(indicator.Parameter);
 					var divSources = $(utils.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#agencies'));
@@ -470,7 +510,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 						$(utils.buildHTML('a', { 'class': 'source-color', 'style': 'background-color:#' + app.getSource(app.getSourceShortName(source)).Color }))
 							.appendTo($(divSources));
 
-						$(utils.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.Items, source) }))
+						$(utils.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.items, source) }))
 							.appendTo($(divSources))
 								.text(app.getSourceShortName(source));
 
@@ -481,10 +521,10 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 					var divHorizon = $(utils.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#horizons'));
 
 					// Display sources that have "absolute error for 1 year" data 
-					app.displayErrors(pivotResponse.Data, indicator.Parameter, app.getMeasureAbsoluteErrorForOneYear(),datasetSources.Items, divHorizon);
+					app.displayErrors(pivotResponse.data, indicator.Parameter, app.getMeasureAbsoluteErrorForOneYear(),datasetSources.items, divHorizon);
 
 					// Display sources that have "absolute error for 2 year" data 
-					app.displayErrors(pivotResponse.Data, indicator.Parameter, app.getMeasureAbsoluteErrorForTwoYears(),datasetSources.Items, divHorizon);
+					app.displayErrors(pivotResponse.data, indicator.Parameter, app.getMeasureAbsoluteErrorForTwoYears(),datasetSources.items, divHorizon);
 
 				});
 
@@ -503,6 +543,8 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 						app.drawForecastingError(container, countryId, $(this).parent().attr('id'), availableSources, $(this).attr('id'));
 					}
 				});
+
+				utils.removeLoadingState(container);
 			});
 		});
 	});
@@ -525,9 +567,12 @@ apps.forecastTrackingTool.prototype.displayErrors = function(items, indicator, m
 
 	if (sourcesForYear.length > 0){
 		var text = '1-year';
-		if (measure.key == app.getMeasureAbsoluteErrorForTwoYears().key)
+		var id = '1';
+		if (measure.key == app.getMeasureAbsoluteErrorForTwoYears().key){
 			text =  '2-years'
-		$(utils.buildHTML('span', { 'class': 'year', 'id': '1', 'sources': sourcesForYear.toString() }))
+			id = '2';
+		};
+		$(utils.buildHTML('span', { 'class': 'year', 'id': id, 'sources': sourcesForYear.toString() }))
 			.appendTo(container).text(text);
 	}
 	else
@@ -638,18 +683,18 @@ apps.forecastTrackingTool.prototype.getChartContainer = function (id, source) {
 
 apps.forecastTrackingTool.prototype.setIndicatorName = function (indicatorId) {
 	$('div#countries').getRequest(this.indicatorsUrl, function (datasetIndicators) {
-		$.each(datasetIndicators.Items, function () {
-			if (this.Key == indicatorId)
-				$('div#header div').text(this.Name);
+		$.each(datasetIndicators.items, function () {
+			if (this.key == indicatorId)
+				$('div#header div').text(this.name);
 		});
 	});	
 };
 
 apps.forecastTrackingTool.prototype.setCountryName = function (countryId) {
 	$('div#countries').getRequest(this.countriesUrl, function (datasetCountries) {
-		$.each(datasetCountries.Items, function () {
-			if (this.Key == countryId)
-				$('div#header div').text(this.Name); 
+		$.each(datasetCountries.items, function () {
+			if (this.key == countryId)
+				$('div#header div').text(this.name); 
 		});
 	});
 };
@@ -761,7 +806,7 @@ apps.forecastTrackingTool.prototype.getKeys = function (array) {
 	
 	var result = [];
 	$.each(array, function () {
-		result.push(this.Key.toString());
+		result.push(this.key.toString());
 	});
 	return result;
 };
@@ -770,8 +815,8 @@ apps.forecastTrackingTool.prototype.getKey = function (array, value) {
 	var key;
 	var i;
 	for (i = 0; i < array.length; i++) {
-		if (array[i].Name == value) {
-			key = array[i].Key;
+		if (array[i].name == value) {
+			key = array[i].key;
 			break;
 		}
 	}
@@ -989,25 +1034,25 @@ apps.forecastTrackingTool.prototype.getDataDescriptor = function (time, sources,
 		"Frequencies": ["A"],
 		"Header": [
 			{
-				"DimensionId": "Time",
-				"Members": time
+				"dimensionId": "Time",
+				"members": time
 			}],
 		"Stub": [
 			{
-				"DimensionId": "Source",
-				"Members": $.isArray(sources) ? sources : [sources]
+				"dimensionId": "Source",
+				"members": $.isArray(sources) ? sources : [sources]
 			},
 			{
-				"DimensionId": "Country",
-				"Members": $.isArray(countries) ? countries : [countries]
+				"dimensionId": "Country",
+				"members": $.isArray(countries) ? countries : [countries]
 			},
 			{
-				"DimensionId": "Indicator",
-				"Members": $.isArray(indicators) ? indicators : [indicators]
+				"dimensionId": "Indicator",
+				"members": $.isArray(indicators) ? indicators : [indicators]
 			},
 			{
-				"DimensionId": "Measure",
-				"Members": $.isArray(measures) ? measures : [measures]
+				"dimensionId": "Measure",
+				"members": $.isArray(measures) ? measures : [measures]
 			}],
 		"Filter": [
 			],
@@ -1016,7 +1061,7 @@ apps.forecastTrackingTool.prototype.getDataDescriptor = function (time, sources,
 };
 
 apps.forecastTrackingTool.prototype.getTimeSeries = function (dataDescriptor, pivotResponse, isDateTimeSeries) {
-	return this.getSeriesDataFromPivotDimensions(pivotResponse.Data,  dataDescriptor.Header,  pivotResponse.Stub, isDateTimeSeries);
+	return this.getSeriesDataFromPivotDimensions(pivotResponse.data,  dataDescriptor.Header,  pivotResponse.stub, isDateTimeSeries);
 };
 
 apps.forecastTrackingTool.prototype.getSeriesDataFromPivotDimensions = function (data, headerDim, stubDim, isDateTimeXaxis) {
@@ -1027,7 +1072,7 @@ apps.forecastTrackingTool.prototype.getSeriesDataFromPivotDimensions = function 
 		var allDimName = "", dimId, isCalculatedMember;
 		var frequency = tuple.frequency;
 		if (dimension.length == 1) {
-			dimId = dimension[0].DimensionId;
+			dimId = dimension[0].dimensionId;
 			allDimName = tuple[dimId];
 			if (dimId == 'Time') {
 				if (allDimName.toUpperCase().indexOf('Date'.toUpperCase()) != -1) {
@@ -1040,7 +1085,7 @@ apps.forecastTrackingTool.prototype.getSeriesDataFromPivotDimensions = function 
 			}
 		} else {
 			for (var j = 0; j < dimension.length; j++) {
-				dimId = dimension[j].DimensionId;
+				dimId = dimension[j].dimensionId;
 				var dimName = tuple[dimId];
 				if (dimId == 'Time') {
 					if (allDimName.toUpperCase().indexOf('Date'.toUpperCase()) != -1) {

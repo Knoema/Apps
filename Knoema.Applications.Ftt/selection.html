@@ -5,14 +5,24 @@
 	<script type="text/javascript" src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/ftt.js"></script>	
 	<script type="text/javascript" src="js/charts.js"></script>
-	<script type="text/javascript" src="http://dev.knoema.org/js/knoema-app.js"></script>
+	<script type="text/javascript" src="http://dev.knoema.com/app-script"></script>
 	<script type="text/javascript">
 
 		function InitApplication() {
 
 			var app = new apps.forecastTrackingTool();
-			app.loadCountries();
-			app.loadIndicators();
+			app.init(function(){
+					app.loadCountries(function(){
+						$('div#countries').find('a').click(function(){
+							changeUrl($(this));
+						});
+					});
+					app.loadIndicators(function(){
+						$('div#indicators').find('a').click(function(){
+							changeUrl($(this));
+						});
+					});
+			});		
 
 			var filter = '';
 			$('input#selection-filter').on('keyup', function () {
@@ -28,6 +38,19 @@
 				}
 			});
 		};
+		
+		function changeUrl(link){
+			
+			var result = '';
+			var token = utils.parseAccessToken();
+			if (token != null)
+				result = '#' + token;
+			
+			$(link).attr('href', $(link).attr('href') + result);
+		};
+		
+				
+		
 
 	</script>
 	<link rel="stylesheet" href="css/site.css" type="text/css" />

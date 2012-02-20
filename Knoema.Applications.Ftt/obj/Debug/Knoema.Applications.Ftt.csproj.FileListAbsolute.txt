@@ -1,0 +1,8 @@
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\bin\img\button-explore-forecasting.png
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\bin\img\loading.gif
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\bin\img\world.svg
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\bin\Knoema.Applications.Ftt.dll
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\bin\Knoema.Applications.Ftt.pdb
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\obj\Debug\Knoema.Applications.Ftt.dll
+C:\Users\Polyakova\Documents\Visual Studio 2010\Projects\Apps\Knoema.Applications.Ftt\obj\Debug\Knoema.Applications.Ftt.pdb

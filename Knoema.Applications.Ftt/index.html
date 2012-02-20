@@ -5,13 +5,15 @@
 	<script type="text/javascript" src="js/highcharts.js"></script>
 	<script type="text/javascript" src="js/ftt.js"></script>	
 	<script type="text/javascript" src="js/charts.js"></script>	
-	<script type="text/javascript" src="http://dev.knoema.org/js/knoema-app.js"></script>
+	<script type="text/javascript" src="http://dev.knoema.com/app-script"></script>
 	<script type="text/javascript">
 
 		function InitApplication() {
 
-			var app = new apps.forecastTrackingTool();
-			app.loadGroupOfSeven(app.getConstant('GDP'));
+			var app = new apps.forecastTrackingTool();			
+			app.init(function(){
+				app.loadGroupOfSeven(app.getConstant('GDP'));
+			});
 
 			$('div#ftt-index h3 span').click(function () {
 
@@ -21,8 +23,19 @@
 				app.loadGroupOfSeven(app.getConstant($(this).text()));
 			});
 		}
+		
+		function getToken(){
+			var result = '';
+			var token = utils.parseAccessToken();
+			if (token != null)
+				result = '#' + token;
+			return result;
+		}
 
 		$(document).ready(function () {
+			$('div#ftt-index').find('a').click(function(){
+				$(this).attr('href', $(this).attr('href') + getToken());
+			});
 		}).mousemove(function (e) {
 			$('div#tooltip').css({ left: e.clientX + 15, top: e.clientY + 15 });
 		});

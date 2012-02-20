@@ -52,11 +52,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\site.css" />
-    <Content Include="img\chart.png" />
-    <Content Include="img\loading.gif" />
-    <Content Include="img\map.png" />
-    <Content Include="img\separator.png" />
-    <Content Include="img\table.png" />
+    <Content Include="img\chart.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\loading.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\map.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\separator.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\table.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="index.html" />
     <Content Include="js\fyn.js" />
     <Content Include="js\jquery-1.7.min.js" />
