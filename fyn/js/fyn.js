@@ -224,9 +224,14 @@ apps.findYourNumber.prototype.displayDimensionFields = function (indicator) {
 	var container = $(utils.buildHTML('div', {'class':'fields'})).appendTo($('div#visualization'));
 	
 	for (var prop in indicator.fields){
-		if (prop == 'source' || prop == 'long definition'){
+		if (prop == 'long definition'){
 			var field = $(utils.buildHTML('div', {'class':'field'})).appendTo(container);
-			$(utils.buildHTML('span', prop.charAt(0).toUpperCase() + prop.slice(1) + ":", {'class': 'property'})).appendTo(field);
+			$(utils.buildHTML('span', "Definition:", {'class': 'property'})).appendTo(field);
+			$(utils.buildHTML('span', indicator.fields[prop])).appendTo(field);
+		}
+		else if (prop == 'source'){
+			var field = $(utils.buildHTML('div', {'class':'field'})).appendTo(container);
+			$(utils.buildHTML('span', "Source:", {'class': 'property'})).appendTo(field);
 			$(utils.buildHTML('span', indicator.fields[prop])).appendTo(field);
 		}
 	};
