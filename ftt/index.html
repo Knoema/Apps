@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<script type="text/javascript" src="js/jquery-1.7.min.js"></script>	
+	<script type="text/javascript" src="js/highcharts.js"></script>
+	<script type="text/javascript" src="js/ftt.js"></script>	
+	<script type="text/javascript" src="js/charts.js"></script>	
+	<script type="text/javascript" src="http://dev.knoema.com/app-script"></script>
+	<script type="text/javascript">
+
+		function InitApplication() {
+
+			var app = new apps.forecastTrackingTool();			
+			app.init(function(){
+				app.loadGroupOfSeven(app.getConstant('GDP'));
+			});
+
+			$('div#ftt-index h3 span').click(function () {
+
+				$('div#ftt-index h3 span').removeClass('selected');
+				$(this).toggleClass('selected');
+
+				app.loadGroupOfSeven(app.getConstant($(this).text()));
+			});
+		}
+		
+		function getToken(){
+			var result = '';
+			var token = utils.parseAccessToken();
+			if (token != null)
+				result = '#' + token;
+			return result;
+		}
+
+		$(document).ready(function () {
+			$('div#ftt-index').find('a').click(function(){
+				$(this).attr('href', $(this).attr('href') + getToken());
+			});
+		}).mousemove(function (e) {
+			$('div#tooltip').css({ left: e.clientX + 15, top: e.clientY + 15 });
+		});
+
+	</script>
+	<link rel="stylesheet" href="css/site.css" type="text/css" />
+	<title>Forecast Tracking Tool</title>
+</head>
+<body>
+	<div id="app-holder">
+		<div id="ftt-index">
+			<div id="text">
+				<p>
+					Within this tool, we track which agency is more accurate in terms of their forecasts.
+					By comparing forecasts of different agencies across time against actual values (after
+					the official figures for these indicators are released), we calculate the average
+					error for each indicator and each forecasting horizon. The lower the average error,
+					the better the forecast.
+				</p>
+				<p>
+					We are happy to provide the full methodology used in this tool. Please request the
+					methodology by sending an email to: <a href="mailto:feedback@knoema.com">feedback@knoema.com</a>.
+				</p>
+				<p>
+					We fully understand that different agencies release their forecast figures at different
+					times throughout the year. Therefore, some agencies work with more historical data
+					than others before they generate their forecasts. That implies that these agencies
+					are in a better position to forecast the future. We fully understand the limitation
+					of our approach.
+				</p>
+				<p>
+					Another important point to keep in mind is that different agencies cover different
+					set of indicators/countries/forecast periods. Additionally, we don’t have the same
+					number of archived forecast releases for all agencies. Ideally, a true comparison
+					of which agency is better in terms of forecasting is only possible under the exact
+					conditions for all agencies. That is not realistic given different priorities and
+					production schedule for different forecasting agencies.
+				</p>
+				<p>
+					Having identified these potential limitations, we still believe the tool is extremely
+					useful as it could serve as a guide to which forecasting agency to use for specific
+					indicators and countries.
+				</p>
+				<p>
+					Please review and let us know how we can improve the tool together.
+				</p>
+				<p>
+					<a href="selection.html" id="explore-forecasting"></a>
+				</p>
+			</div>
+			<ul class="ftt-charts">
+				<li>
+					<p>
+						<a href="explore.html?country=1001780">US</a></p>
+					<div id="1001780">
+					</div>
+				</li>
+				<li>
+					<p>
+						<a href="explore.html?country=1000830">Japan</a>
+					</p>
+					<div id="1000830">
+					</div>
+				</li>
+				<li>
+					<p>
+						<a href="explore.html?country=1000620">Germany</a></p>
+					<div id="1000620">
+					</div>
+				</li>
+				<li>
+					<p>
+						<a href="explore.html?country=1001770">UK</a>
+					</p>
+					<div id="1001770">
+					</div>
+				</li>
+				<li>
+					<p>
+						<a href="explore.html?country=1000580">France</a>
+					</p>
+					<div id="1000580">
+					</div>
+				</li>
+				<li>
+					<p>
+						<a href="explore.html?country=1000810">Italy</a></p>
+					<div id="1000810">
+					</div>
+				</li>
+				<li>
+					<p>
+						<a href="explore.html?country=1000290">Canada</a>
+					</p>
+					<div id="1000290">
+					</div>
+				</li>
+			</ul>
+			<h3>
+				<span class="selected">GDP</span> / <span>CPI</span></h3>
+			<div id="tooltip">
+			</div>
+		</div>
+	</div>
+</body>
+</html>

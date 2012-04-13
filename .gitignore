@@ -1,4 +1,1 @@
-*.suo
-*.teamcity.user
-bin
-obj
+*.config
