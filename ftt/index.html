@@ -1,46 +1,17 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<script type="text/javascript" src="js/jquery-1.7.min.js"></script>	
-	<script type="text/javascript" src="js/highcharts.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="http://dev.knoema.com/app-script?version=1.0"></script>
+	<script type="text/javascript" src="js/highcharts.js"></script>	
 	<script type="text/javascript" src="js/ftt.js"></script>	
 	<script type="text/javascript" src="js/charts.js"></script>	
-	<script type="text/javascript" src="http://dev.knoema.com/app-script"></script>
-	<script type="text/javascript">
-
-		function InitApplication() {
-
+	<script type="text/javascript">		
+		Knoema.Helpers.ready(function () {
 			var app = new apps.forecastTrackingTool();			
-			app.init(function(){
-				app.loadGroupOfSeven(app.getConstant('GDP'));
-			});
-
-			$('div#ftt-index h3 span').click(function () {
-
-				$('div#ftt-index h3 span').removeClass('selected');
-				$(this).toggleClass('selected');
-
-				app.loadGroupOfSeven(app.getConstant($(this).text()));
-			});
-		}
-		
-		function getToken(){
-			var result = '';
-			var token = utils.parseAccessToken();
-			if (token != null)
-				result = '#' + token;
-			return result;
-		}
-
-		$(document).ready(function () {
-			$('div#ftt-index').find('a').click(function(){
-				$(this).attr('href', $(this).attr('href') + getToken());
-			});
-		}).mousemove(function (e) {
-			$('div#tooltip').css({ left: e.clientX + 15, top: e.clientY + 15 });
-		});
-
-	</script>
+			app.loadGroupOfSeven(app.getConstant('GDP'));
+		});	
+	</script>	
 	<link rel="stylesheet" href="css/site.css" type="text/css" />
 	<title>Forecast Tracking Tool</title>
 </head>

@@ -1,14 +1,11 @@
-﻿var ftt = new apps.forecastTrackingTool();
-charts = {
-	
+﻿charts = {	
 	drawLines: function (container, series, precision) {
-
 		var options = charts.getChartOptions(container, precision);	
 		var chart = new Highcharts.Chart(options, function (chart) {
 
 			$.each(series, function (index, series) {
-				var option = ftt.getSource(
-					ftt.getSourceShortName(series.seriesId)
+				var option = apps.forecastTrackingTool.prototype.getSource(
+					apps.forecastTrackingTool.prototype.getSourceShortName(series.seriesId)
 				);
 				var chartSeries = {
 					id: series.seriesId,
@@ -47,8 +44,8 @@ charts = {
 		var chart = new Highcharts.Chart(options, function (chart) {
 
 			$.each(series, function (index, series) {
-				var option = ftt.getSource(
-					ftt.getSourceShortName(series.seriesId)
+				var option = apps.forecastTrackingTool.prototype.getSource(
+					apps.forecastTrackingTool.prototype.getSourceShortName(series.seriesId)
 				);
 				var chartSeries = {
 					id: series.seriesId,
@@ -117,7 +114,7 @@ charts = {
 						enabled: true,
 						formatter: function () {
 							if (precision)
-								return utils.roundToNDecimalPlaces(this.y, precision) + ' %';
+								return Knoema.Helpers.roundToNDecimalPlaces(this.y, precision) + ' %';
 							else
 								return this.y;
 						}, 
@@ -167,7 +164,7 @@ charts = {
 					},
 					formatter: function () {
 						if (precision)
-							return utils.roundToNDecimalPlaces(this.value, precision - 1) + ' %';
+							return Knoema.Helpers.roundToNDecimalPlaces(this.value, precision - 1) + ' %';
 						else
 							return this.value;
 					}
@@ -221,7 +218,7 @@ charts = {
 					var seriesName = this.series.options.name;			
 							
 					if (precision)
-						value = utils.roundToNDecimalPlaces(this.y, precision);
+						value = Knoema.Helpers.roundToNDecimalPlaces(this.y, precision);
 					else
 						value = this.y;
 					if (this.point.name) {

@@ -1,57 +1,17 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<script type="text/javascript" src="js/jquery-1.7.min.js"></script>	
-	<script type="text/javascript" src="js/highcharts.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="http://dev.knoema.com/app-script?version=1.0"></script>
+	<script type="text/javascript" src="js/highcharts.js"></script>	
 	<script type="text/javascript" src="js/ftt.js"></script>	
-	<script type="text/javascript" src="js/charts.js"></script>
-	<script type="text/javascript" src="http://dev.knoema.com/app-script"></script>
-	<script type="text/javascript">
-
-		function InitApplication() {
-
+	<script type="text/javascript" src="js/charts.js"></script>	
+	<script type="text/javascript">		
+		Knoema.Helpers.ready(function () {
 			var app = new apps.forecastTrackingTool();
-			app.init(function(){
-					app.loadCountries(function(){
-						$('div#countries').find('a').click(function(){
-							changeUrl($(this));
-						});
-					});
-					app.loadIndicators(function(){
-						$('div#indicators').find('a').click(function(){
-							changeUrl($(this));
-						});
-					});
-			});		
-
-			var filter = '';
-			$('input#selection-filter').on('keyup', function () {
-				var val = $(this).val().toLowerCase();
-				if (filter != val) {
-					filter = val;
-					$('div#countries').find('div').each(function () {
-						if ((filter == '') || $(this).find('a').text().toLowerCase().indexOf(filter) != -1)
-							$(this).show();
-						else
-							$(this).hide();
-					});
-				}
-			});
-		};
-		
-		function changeUrl(link){
-			
-			var result = '';
-			var token = utils.parseAccessToken();
-			if (token != null)
-				result = '#' + token;
-			
-			$(link).attr('href', $(link).attr('href') + result);
-		};
-		
-				
-		
-
+			app.loadCountries();
+			app.loadIndicators();							
+		});	
 	</script>
 	<link rel="stylesheet" href="css/site.css" type="text/css" />
 	<title>Forecast Tracking Tool</title>

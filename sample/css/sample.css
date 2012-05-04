@@ -1,0 +1,15 @@
+body
+{
+	font: 12pt Calibri;
+}
+
+select#country,select#product
+{
+	width:340px;	
+}
+
+div#chart
+{
+	width:400px;
+	height:250px;
+}

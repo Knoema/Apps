@@ -1,6 +1,7 @@
 ﻿var apps = apps || {};
-
 apps.forecastTrackingTool = function () {
+	
+	Knoema.Helpers.clientId = 'B6O/Vg=';
 	
 	this.countriesUrl ='/api/1.0/meta/dataset/AEF2011OCT/dimension/Country';
 	this.indicatorsUrl = '/api/1.0/meta/dataset/AEF2011OCT/dimension/Indicator';
@@ -8,13 +9,8 @@ apps.forecastTrackingTool = function () {
 
 	this.constants = this.constants();
 	this.selectedSource = null;	
-};
-
-apps.forecastTrackingTool.prototype.init = function (callback) {
 	
-	utils.clientId = 'B6O/Vg=';
-	callback();				
-
+	this.bindEvents();
 };
 
 apps.forecastTrackingTool.prototype.loadGroupOfSeven = function (indicator) {
@@ -33,56 +29,61 @@ apps.forecastTrackingTool.prototype.loadGroupOfSeven = function (indicator) {
 				);
 
 		var container = country;	
-		utils.setLoadingState($('div#' + container));	
-		$('div#' + container).postRequest(dataDescriptor, $.proxy(function(pivotResponse){
+		this.setLoadingState($('div#' + container));	
+		Knoema.Helpers.post(dataDescriptor, $.proxy(function(pivotResponse){
 
 				var series = this.getTimeSeries(dataDescriptor, pivotResponse, true);
 				charts.drawLines(container, series, this.getConstant('Precision'));
 
-				utils.setLoadingState(container);
+				this.setLoadingState(container);
 
 			}, this));		
 	}, this));
 };
 
-apps.forecastTrackingTool.prototype.loadCountries = function (callback) {
+apps.forecastTrackingTool.prototype.loadCountries = function () {
 
 	var container = $('div#countries');
+	var app = this;
+	
+	app.setLoadingState(container);
 
-	utils.setLoadingState(container);
-
-	$(container).getRequest(this.countriesUrl, function (result) {
+	Knoema.Helpers.get(this.countriesUrl, function (result) {
 		$.each(result.items, function () {
 			var href = 'explore.html?country=' + this.key;
-			$(utils.buildHTML('a', { 'href': href, 'countryId': this.key }))
-				.appendTo($(utils.buildHTML('div'))
+			$(Knoema.Helpers.buildHTML('a', { 'href': href, 'countryId': this.key }))
+				.appendTo($(Knoema.Helpers.buildHTML('div'))
 					.appendTo(container)).text(this.name);
 		});
-		callback();		
-		utils.removeLoadingState(container);
+		app.removeLoadingState(container);
 	});
 };
 
-apps.forecastTrackingTool.prototype.loadIndicators = function (callback) {
+apps.forecastTrackingTool.prototype.loadIndicators = function () {
 
 	var container = $('div#indicators');	
-	utils.setLoadingState(container);
+	var app = this;
 
-	$(container).getRequest(this.indicatorsUrl, function (result) {
+	app.setLoadingState(container);
+
+	Knoema.Helpers.get(this.indicatorsUrl, function (result) {
 		$.each(result.items, function () {
 			if (this.level > 0) {
 				var href = 'explore.html?indicator=' + this.key;
-				$(utils.buildHTML('a', { 'href': href, 'countryId': this.key }))
-					.appendTo($(utils.buildHTML('div'))
+				$(Knoema.Helpers.buildHTML('a', { 'href': href, 'countryId': this.key }))
+					.appendTo($(Knoema.Helpers.buildHTML('div'))
 						.appendTo(container)).text(this.name);
 			}
 		});
-		utils.removeLoadingState(container);
-		callback();
+		app.removeLoadingState(container);
 	});
 };
 
-apps.forecastTrackingTool.prototype.list = function (indicator, country) {
+apps.forecastTrackingTool.prototype.list = function () {
+	
+	var indicator = this.getUrlVar('indicator');
+	var country = this.getUrlVar('country');
+	
 	if (indicator != undefined) {
 		$('div#filter').show();
 		$('div#tabs').show();
@@ -92,7 +93,7 @@ apps.forecastTrackingTool.prototype.list = function (indicator, country) {
 		this.exploreForecastingCountry(country);
 };
 
-apps.forecastTrackingTool.prototype.table = function (indicatorId){
+apps.forecastTrackingTool.prototype.table = function (){
 	
 	var app = this;
 
@@ -108,10 +109,10 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 	var measureTwoYears = app.getMeasureAbsoluteErrorForTwoYears();
 
 	var container = $('div#table');	
-	utils.setLoadingState(container);
+	app.setLoadingState(container);
 
-	$(container).getRequest(app.sourcesUrl, function (datasetSources) {
-		$(container).getRequest(app.countriesUrl, function (datasetCountries) {
+	Knoema.Helpers.get(app.sourcesUrl, function (datasetSources) {
+		Knoema.Helpers.get(app.countriesUrl, function (datasetCountries) {
 
 			// Get sources for data descriptor 
 			var sources = app.getKeys(datasetSources.items);
@@ -119,8 +120,8 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 			// Get countries for data descriptor 
 			var countries = app.getKeys(datasetCountries.items);
 
-			var dataDescriptor = app.getDataDescriptor([time], sources, countries, indicatorId, [measureYear.value, measureTwoYears.value]);
-			$(container).postRequest(dataDescriptor, function (pivotResponse) {
+			var dataDescriptor = app.getDataDescriptor([time], sources, countries, app.getUrlVar('indicator'), [measureYear.value, measureTwoYears.value]);
+			Knoema.Helpers.post(dataDescriptor, function (pivotResponse) {
 				
 				if (pivotResponse.data.length > 0)
 				{
@@ -137,25 +138,25 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 					var table = $('div#ftt-explore div#table table');
 					$.each(data, function (index, item) {
 
-						var row = $(utils.buildHTML('tr')).appendTo(table);
-						$(utils.buildHTML('td')).appendTo(row).text(item.Country);
+						var row = $(Knoema.Helpers.buildHTML('tr')).appendTo(table);
+						$(Knoema.Helpers.buildHTML('td')).appendTo(row).text(item.Country);
 
 						var title = '';
 						var color = app.getConstant('No data color');
 
 						// For error for 1 year
 						if (item.MinErrorOne.Source != ''){
-							title = app.getSourceShortName(item.MinErrorOne.Source) + '-' + utils.roundToNDecimalPlaces(item.MinErrorOne.Value, app.getConstant('Precision')) + '%';
+							title = app.getSourceShortName(item.MinErrorOne.Source) + '-' + Knoema.Helpers.roundToNDecimalPlaces(item.MinErrorOne.Value, app.getConstant('Precision')) + '%';
 							color = app.getSource(app.getSourceShortName(item.MinErrorOne.Source)).Color;			
 							app.pushStatistics(statisticsForOneYear, item.MinErrorOne, '1 year');
 						}
 
-						$(utils.buildHTML('a',
+						$(Knoema.Helpers.buildHTML('a',
 							{
 								'class': 'source-color',
 								'style': 'background-color:#' + color,
 								'title': title
-							})).appendTo($(utils.buildHTML('td'))
+							})).appendTo($(Knoema.Helpers.buildHTML('td'))
 								.appendTo(row));
 
 						title = '';
@@ -163,17 +164,17 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 
 						// For error for 2 years
 						if (item.MinErrorTwo.Source != ''){
-							title = app.getSourceShortName(item.MinErrorOne.Source) +'-' + utils.roundToNDecimalPlaces(item.MinErrorTwo.Value,  app.getConstant('Precision')) + '%';
+							title = app.getSourceShortName(item.MinErrorOne.Source) +'-' + Knoema.Helpers.roundToNDecimalPlaces(item.MinErrorTwo.Value,  app.getConstant('Precision')) + '%';
 							color = app.getSource(app.getSourceShortName(item.MinErrorTwo.Source)).Color;
 							app.pushStatistics(statisticsForTwoYears, item.MinErrorTwo, '2 years');
 						}
 
-						$(utils.buildHTML('a',
+						$(Knoema.Helpers.buildHTML('a',
 							{
 								'class': 'source-color',
 								'style': 'background-color:#' + color,
 								'title': title
-							})).appendTo($(utils.buildHTML('td'))
+							})).appendTo($(Knoema.Helpers.buildHTML('td'))
 								.appendTo(row));
 					});
 
@@ -188,12 +189,12 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 						legendSources = statisticsForTwoYears;
 
 					$.each(legendSources, function(){
-						$(utils.buildHTML('a',
+						$(Knoema.Helpers.buildHTML('a',
 							{
 								'class': 'source-color',
 								'style': 'background-color:#' + app.getSource(app.getSourceShortName(this.seriesId)).Color,
 							})).appendTo($('div#tableLegend'));
-						$(utils.buildHTML('span', {'style': 'margin-right:10px'}))
+						$(Knoema.Helpers.buildHTML('span', {'style': 'margin-right:10px'}))
 							.appendTo($('div#tableLegend'))
 								.text(app.getSourceShortName(this.seriesId));
 					});
@@ -203,15 +204,15 @@ apps.forecastTrackingTool.prototype.table = function (indicatorId){
 				else 
 					app.showNoDataMessage('div#table');
 
-				utils.removeLoadingState(container);
+				app.removeLoadingState(container);
 			});				
 		});
 	});		
 };
 
 
-apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
-
+apps.forecastTrackingTool.prototype.map = function(measureId){
+	
 	$('div#ftt-map').html('');
 	var legend = $('div#map-header div');
 	$(legend).html('');
@@ -228,10 +229,10 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 		}
 
 		var container = $('#map');	
-		utils.setLoadingState(container);
+		app.setLoadingState(container);
 
-		$(container).getRequest(app.sourcesUrl, function (datasetSources) {
-			$(container).getRequest(app.countriesUrl, function (datasetCountries) {
+		Knoema.Helpers.get(app.sourcesUrl, function (datasetSources) {
+			Knoema.Helpers.get(app.countriesUrl, function (datasetCountries) {
 
 				// Get sources for data descriptor 
 				var sources = app.getKeys(datasetSources.items);
@@ -239,10 +240,10 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 				// Get countries for data descriptor 
 				var countries = app.getKeys(datasetCountries.items);
 
-				var dataDescriptor = app.getDataDescriptor([time], sources, countries, indicatorId, measureId);
+				var dataDescriptor = app.getDataDescriptor([time], sources, countries, app.getUrlVar('indicator'), measureId);
 				dataDescriptor.RegionIdsRequired = true;
 			
-				$(container).postRequest(dataDescriptor, function (pivotResponse) {
+				Knoema.Helpers.post(dataDescriptor, function (pivotResponse) {
 
 					if (pivotResponse.data.length > 0)
 					{
@@ -270,7 +271,7 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 											color: '#' + app.getSource(app.getSourceShortName(item.Source)).Color,
 											tooltip: this.Country + '<br/> Value: ' 
 												+ app.getSourceShortName(item.Source) 
-												+ '-' + utils.roundToNDecimalPlaces(item.Value, app.getConstant('Precision')) + '%'
+												+ '-' + Knoema.Helpers.roundToNDecimalPlaces(item.Value, app.getConstant('Precision')) + '%'
 										});	
 									
 										if ($.inArray(item.Source, sources) == -1)
@@ -284,12 +285,12 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 
 						// Display legend							
 						$.each(sources, function(){
-							$(utils.buildHTML('a',
+							$(Knoema.Helpers.buildHTML('a',
 								{
 									'class': 'source-color',
 									'style': 'background-color:#' +  app.getSource(app.getSourceShortName(this)).Color,
 								})).appendTo(legend);
-							$(utils.buildHTML('span', {'style': 'margin-right:10px'}))
+							$(Knoema.Helpers.buildHTML('span', {'style': 'margin-right:10px'}))
 								.appendTo(legend)
 									.text(app.getSourceShortName(this));
 						});
@@ -297,7 +298,7 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 					else 
 						app.showNoDataMessage('div#map');
 
-					utils.removeLoadingState(container);
+					app.removeLoadingState(container);
 				});					
 			});
 		});
@@ -308,7 +309,7 @@ apps.forecastTrackingTool.prototype.map = function(indicatorId, measureId){
 apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indicatorId) {
 
 	var container = $('div#countries');
-	utils.setLoadingState(container);
+	this.setLoadingState(container);
 
 	$('div#parameter div.country div').text('Country');
 	this.setIndicatorName(indicatorId);
@@ -318,8 +319,8 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 
 	var app = this;
 	
-	$(container).getRequest(app.sourcesUrl, function (datasetSources) {
-		$(container).getRequest(app.countriesUrl, function (datasetCountries) {
+	Knoema.Helpers.get(app.sourcesUrl, function (datasetSources) {
+		Knoema.Helpers.get(app.countriesUrl, function (datasetCountries) {
 
 			// Get sources for data descriptor 
 			var sources = app.getKeys(datasetSources.items);
@@ -334,7 +335,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 				countries,
 				indicatorId,
 				app.getMeasureLatestFigures().value);
-			$(container).postRequest(dataDescriptor, function (responseLatestFigures) {
+			Knoema.Helpers.post(dataDescriptor, function (responseLatestFigures) {
 
 				// Get available sources for selected indicator and measure "absolute error for 1 year"
 				dataDescriptor = app.getDataDescriptor(
@@ -344,7 +345,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 					countries,
 					indicatorId,
 					app.getMeasureAbsoluteErrorForOneYear().value);
-				$(container).postRequest(dataDescriptor, function (responseAbsoluteErrorForYear) {
+				Knoema.Helpers.post(dataDescriptor, function (responseAbsoluteErrorForYear) {
 
 					// Get available sources for selected indicator and measure "absolute error for 2 years"
 					dataDescriptor = app.getDataDescriptor(
@@ -354,7 +355,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 						countries,
 						indicatorId,
 						app.getMeasureAbsoluteErrorForTwoYears().value);
-					$(container).postRequest(dataDescriptor, function (responseAbsoluteErrorForTwoYear) {
+					Knoema.Helpers.post(dataDescriptor, function (responseAbsoluteErrorForTwoYear) {
 
 						// Group sources by countries
 						var arrayLatestFigures = [];
@@ -379,17 +380,17 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 						$.each(arrayLatestFigures, function (index, latestFigure) {
 							var countyId = app.getKey(datasetCountries.items, latestFigure.Parameter);
 
-							$(utils.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#countries')).text(latestFigure.Parameter);
-							var divSources = $(utils.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#agencies'));
+							$(Knoema.Helpers.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#countries')).text(latestFigure.Parameter);
+							var divSources = $(Knoema.Helpers.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#agencies'));
 
 							// Display sources that have "latest figures" data
 							latestFigure.Sources.sort();
 							$.each(latestFigure.Sources, function (index, source) {
 
-								$(utils.buildHTML('a', { 'class': 'source-color', 'style': 'background-color:#' + app.getSource(app.getSourceShortName(source)).Color }))
+								$(Knoema.Helpers.buildHTML('a', { 'class': 'source-color', 'style': 'background-color:#' + app.getSource(app.getSourceShortName(source)).Color }))
 									.appendTo($(divSources));
 
-								$(utils.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.items, source) }))
+								$(Knoema.Helpers.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.items, source) }))
 									.appendTo($(divSources))
 										.text(source.split(' ')[0]);
 
@@ -397,7 +398,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 									$(divSources).append(' / ');
 							});
 
-							var divHorizon = $(utils.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#horizons'));
+							var divHorizon = $(Knoema.Helpers.buildHTML('div', { 'class': 'country', 'id': countyId })).appendTo($('div#horizons'));
 
 							// Display sources that have "forecasting error for 1 year" data 							
 							app.displayErrorsForIndicator(arrayAbsoluteErrorForYear, latestFigure, datasetSources.items, '1-year', divHorizon);
@@ -423,7 +424,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingIndicator = function (indi
 							}
 						});
 
-						utils.removeLoadingState(container);
+						app.removeLoadingState(container);
 					});
 				});
 			});
@@ -449,7 +450,7 @@ apps.forecastTrackingTool.prototype.displayErrorsForIndicator = function(items, 
 			if (text == "2-years")
 				id = '2';
 
-			$(utils.buildHTML('span', { 'class': 'year', 'id': id, 'sources': availableSources.toString() }))
+			$(Knoema.Helpers.buildHTML('span', { 'class': 'year', 'id': id, 'sources': availableSources.toString() }))
 				.appendTo($(container)).text(text);
 		}
 		else
@@ -459,7 +460,7 @@ apps.forecastTrackingTool.prototype.displayErrorsForIndicator = function(items, 
 apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countryId) {
 
 	var container = $('div#countries');	
-	utils.setLoadingState(container);
+	this.setLoadingState(container);
 
 	$('div#parameter div.country div').text('Indicator');
 	this.setCountryName(countryId);
@@ -469,8 +470,8 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 
 	var app = this;
 
-	$(container).getRequest(this.sourcesUrl, function (datasetSources) {
-		$(container).getRequest(app.indicatorsUrl, function (datasetIndicators) {
+	Knoema.Helpers.get(this.sourcesUrl, function (datasetSources) {
+		Knoema.Helpers.get(app.indicatorsUrl, function (datasetIndicators) {
 
 			// Get indicators for data descriptor 
 			var indicators = app.getKeys(datasetIndicators.items);
@@ -485,7 +486,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 					app.getMeasureAbsoluteErrorForOneYear().value,
 					app.getMeasureAbsoluteErrorForTwoYears().value
 				]);
-			$(container).postRequest(dataDescriptor, function (pivotResponse) {
+			Knoema.Helpers.post(dataDescriptor, function (pivotResponse) {
 
 				// Group sources by indicators
 				var array = [];
@@ -500,17 +501,17 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 
 					var parameterId = app.getKey(datasetIndicators.items, indicator.Parameter);
 
-					$(utils.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#countries')).text(indicator.Parameter);
-					var divSources = $(utils.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#agencies'));
+					$(Knoema.Helpers.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#countries')).text(indicator.Parameter);
+					var divSources = $(Knoema.Helpers.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#agencies'));
 
 					// Display sources that have "latest figures" data 
 					indicator.Sources.sort();
 					$.each(indicator.Sources, function (index, source) {
 
-						$(utils.buildHTML('a', { 'class': 'source-color', 'style': 'background-color:#' + app.getSource(app.getSourceShortName(source)).Color }))
+						$(Knoema.Helpers.buildHTML('a', { 'class': 'source-color', 'style': 'background-color:#' + app.getSource(app.getSourceShortName(source)).Color }))
 							.appendTo($(divSources));
 
-						$(utils.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.items, source) }))
+						$(Knoema.Helpers.buildHTML('span', { 'class': 'source', 'id': app.getKey(datasetSources.items, source) }))
 							.appendTo($(divSources))
 								.text(app.getSourceShortName(source));
 
@@ -518,7 +519,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 							$(divSources).append(' / ');
 					});
 
-					var divHorizon = $(utils.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#horizons'));
+					var divHorizon = $(Knoema.Helpers.buildHTML('div', { 'class': 'country', 'id': parameterId })).appendTo($('div#horizons'));
 
 					// Display sources that have "absolute error for 1 year" data 
 					app.displayErrors(pivotResponse.data, indicator.Parameter, app.getMeasureAbsoluteErrorForOneYear(),datasetSources.items, divHorizon);
@@ -544,7 +545,7 @@ apps.forecastTrackingTool.prototype.exploreForecastingCountry = function (countr
 					}
 				});
 
-				utils.removeLoadingState(container);
+				app.removeLoadingState(container);
 			});
 		});
 	});
@@ -572,7 +573,7 @@ apps.forecastTrackingTool.prototype.displayErrors = function(items, indicator, m
 			text =  '2-years'
 			id = '2';
 		};
-		$(utils.buildHTML('span', { 'class': 'year', 'id': id, 'sources': sourcesForYear.toString() }))
+		$(Knoema.Helpers.buildHTML('span', { 'class': 'year', 'id': id, 'sources': sourcesForYear.toString() }))
 			.appendTo(container).text(text);
 	}
 	else
@@ -599,8 +600,8 @@ apps.forecastTrackingTool.prototype.drawForecasting = function (container, count
 		indicator,
 		app.getMeasureLatestFigures().value);
 	
-	$(container).postRequest(baseDataDescriptor, function (responseBaseSource) {
-		$(container).postRequest(extraDataDescriptor, function (responseExtraSources) {
+	Knoema.Helpers.post(baseDataDescriptor, function (responseBaseSource) {
+		Knoema.Helpers.post(extraDataDescriptor, function (responseExtraSources) {
 
 			var baseSourceSerias = app.getTimeSeries(baseDataDescriptor, responseBaseSource, true);
 			var extaSourceSerias = app.getTimeSeries(extraDataDescriptor, responseExtraSources, true);
@@ -653,7 +654,7 @@ apps.forecastTrackingTool.prototype.drawForecastingError = function (container, 
 		}
 
 		var dataDescriptor = this.getDataDescriptor([time], sources, country, indicator, measure);
-		$(container).postRequest(dataDescriptor, $.proxy(function (pivotResponse) {
+		Knoema.Helpers.post(dataDescriptor, $.proxy(function (pivotResponse) {
 			var seriesData = this.getTimeSeries(dataDescriptor, pivotResponse, false);
 			charts.drawBars(container, seriesData, this.getConstant('Precision'));
 		}, this));
@@ -672,7 +673,7 @@ apps.forecastTrackingTool.prototype.getChartContainer = function (id, source) {
 	else {
 		$('div.country').removeClass('expanded');
 		$('div[id="' + id + '"]').addClass('expanded');
-		visualization = $(utils.buildHTML('div', { 'id': 'visualization', 'class': 'chart' }))
+		visualization = $(Knoema.Helpers.buildHTML('div', { 'id': 'visualization', 'class': 'chart' }))
 			.appendTo($('div#countries').find('div#' + id)).get(0);
 	}
 
@@ -682,7 +683,7 @@ apps.forecastTrackingTool.prototype.getChartContainer = function (id, source) {
 };
 
 apps.forecastTrackingTool.prototype.setIndicatorName = function (indicatorId) {
-	$('div#countries').getRequest(this.indicatorsUrl, function (datasetIndicators) {
+	Knoema.Helpers.get(this.indicatorsUrl, function (datasetIndicators) {
 		$.each(datasetIndicators.items, function () {
 			if (this.key == indicatorId)
 				$('div#header div').text(this.name);
@@ -691,7 +692,7 @@ apps.forecastTrackingTool.prototype.setIndicatorName = function (indicatorId) {
 };
 
 apps.forecastTrackingTool.prototype.setCountryName = function (countryId) {
-	$('div#countries').getRequest(this.countriesUrl, function (datasetCountries) {
+	Knoema.Helpers.get(this.countriesUrl, function (datasetCountries) {
 		$.each(datasetCountries.items, function () {
 			if (this.key == countryId)
 				$('div#header div').text(this.name); 
@@ -1135,3 +1136,135 @@ apps.forecastTrackingTool.prototype.getSeriesDataFromPivotDimensions = function 
 	return seriesData;
 };
 
+apps.forecastTrackingTool.prototype.setLoadingState = function (container) {
+
+		var div = $('<div class="loading"><img src="img/loading.gif"/></div>');
+
+		var initialPosition = $(container).css("position");
+		if (initialPosition == "static") {
+			$(container).css("position", "relative");
+		}
+		$(div).appendTo($(container));
+
+		var img = div.find("img");
+		img.css("position", "relative").css("top", ($(container).height() - img.height()) / 2);
+
+		div.fadeIn(1000);
+};	
+
+apps.forecastTrackingTool.prototype.removeLoadingState= function (container) {
+		$(container).find('div.loading').remove();
+};
+
+apps.forecastTrackingTool.prototype.getUrlVar = function (name) {
+	var vars = [], hash;
+	var url = window.location.href;
+	if (window.location.hash.length > 0)
+		url = window.location.href.split('#')[0];
+
+	var hashes = url.slice(window.location.href.indexOf('?') + 1).split('&');
+	for (var i = 0; i < hashes.length; i++) {
+		hash = hashes[i].split('=');
+		vars.push(hash[0]);
+		vars[hash[0]] = hash[1];
+	};
+	
+	return vars[name];
+};
+
+var filter = '';
+apps.forecastTrackingTool.prototype.bindEvents = function () {	
+	
+	var app = this;
+	
+	$('div#ftt-index h3 span').click(function () {
+
+		$('div#ftt-index h3 span').removeClass('selected');
+		$(this).toggleClass('selected');
+
+		app.loadGroupOfSeven(app.getConstant($(this).text()));
+	});	
+	
+	$('input#selection-filter').on('keyup', function () {
+		var val = $(this).val().toLowerCase();
+		if (filter != val) {
+			filter = val;
+			$('div#countries').find('div').each(function () {
+				if ((filter == '') || $(this).find('a').text().toLowerCase().indexOf(filter) != -1)
+					$(this).show();
+				else
+					$(this).hide();
+			});
+		}
+	});
+	
+	$('input#explore-filter').on('keyup', function () {
+		var val = $(this).val().toLowerCase();
+		if (filter != val) {
+			filter = val;
+			$('div#countries').find('div.country').each(function () {
+				var id = $(this).attr('id');
+				if ((filter == '') || $(this).text().toLowerCase().indexOf(filter) != -1)
+					$('div[id="' + $(this).attr('id') + '"]').show();
+				else
+					$('div[id="' + $(this).attr('id') + '"]').hide();
+			});
+		};
+	});	
+
+	$('div#tabs ul li').live('click', function () {
+		if (!$(this).hasClass('active')) {
+			$(this).closest("ul").find('li').removeClass('active');
+			$(this).addClass('active');
+
+			$('div.tab-content').addClass('hidden');
+			switch ($(this).text()) {
+				case 'List':
+					$('div#filter').show();
+					$('div#list').removeClass('hidden');
+					break;
+				case 'Table':					
+					// Show table container
+					$('div#filter').hide();
+					$('div#table').removeClass('hidden');
+
+					// IF the first time, load table
+					if ($('div#ftt-explore div#table table').find('tr').length == 1)
+						app.table();
+					break;
+				case 'Map':
+					// Show maps container
+					$('div#filter').hide();
+					$('div#map').removeClass('hidden');
+
+					// IF the first time, load map
+					if ($('div#map').find('svg').length == 0) {
+
+						var measure = app.getMeasureAbsoluteErrorForOneYear();
+						app.map(measure.value);
+
+						$('div#map div#map-header span').click(function () {
+
+							$('div#map div#map-header span').removeClass('selected');
+							$(this).toggleClass('selected');
+
+							measure = app.getMeasureAbsoluteErrorForOneYear();
+							if ($(this).text() == '2 years')
+								measure = app.getMeasureAbsoluteErrorForTwoYears();
+
+							app.map(measure.value);
+						});
+					}
+					break;
+				default:
+					break;
+			};
+		};
+		return false;
+	});
+		
+	$(document).ready(function () {		
+	}).mousemove(function (e) {
+		$('div#tooltip').css({ left: e.clientX + 15, top: e.clientY + 15 });
+	});
+};

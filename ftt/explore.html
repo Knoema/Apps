@@ -1,91 +1,16 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<script type="text/javascript" src="js/jquery-1.7.min.js"></script>	
-	<script type="text/javascript" src="js/highcharts.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="http://dev.knoema.com/app-script?version=1.0"></script>
+	<script type="text/javascript" src="js/highcharts.js"></script>	
 	<script type="text/javascript" src="js/ftt.js"></script>	
-	<script type="text/javascript" src="js/charts.js"></script>
-	<script type="text/javascript" src="http://dev.knoema.com/app-script"></script>
-	<script type="text/javascript">
-
-		function InitApplication() {
-
+	<script type="text/javascript" src="js/charts.js"></script>	
+	<script type="text/javascript">		
+		Knoema.Helpers.ready(function () {
 			var app = new apps.forecastTrackingTool();
-			app.init(function(){
-				app.list(utils.getUrlVar('indicator'), utils.getUrlVar('country'));
-			});				
-
-			var filter = '';
-			$('input#explore-filter').on('keyup', function () {
-				var val = $(this).val().toLowerCase();
-				if (filter != val) {
-					filter = val;
-					$('div#countries').find('div.country').each(function () {
-						var id = $(this).attr('id');
-						if ((filter == '') || $(this).text().toLowerCase().indexOf(filter) != -1)
-							$('div[id="' + $(this).attr('id') + '"]').show();
-						else
-							$('div[id="' + $(this).attr('id') + '"]').hide();
-					});
-				};
-			});
-		};
-
-		$('div#tabs ul li').live('click', function () {
-			var app = new apps.forecastTrackingTool();
-			if (!$(this).hasClass('active')) {
-				$(this).closest("ul").find('li').removeClass('active');
-				$(this).addClass('active');
-
-				$('div.tab-content').addClass('hidden');
-				switch ($(this).text()) {
-					case 'List':
-						$('div#filter').show();
-						$('div#list').removeClass('hidden');
-						break;
-					case 'Table':
-
-						// Show table container
-						$('div#filter').hide();
-						$('div#table').removeClass('hidden');
-
-						// IF the first time, load table
-						if ($('div#ftt-explore div#table table').find('tr').length == 1)
-							app.table(utils.getUrlVar('indicator'));
-						break;
-					case 'Map':
-
-						// Show maps container
-						$('div#filter').hide();
-						$('div#map').removeClass('hidden');
-
-						// IF the first time, load map
-						if ($('div#map').find('svg').length == 0) {
-
-							var measure = app.getMeasureAbsoluteErrorForOneYear();
-							app.map(utils.getUrlVar('indicator'), measure.value);
-
-							$('div#map div#map-header span').click(function () {
-
-								$('div#map div#map-header span').removeClass('selected');
-								$(this).toggleClass('selected');
-
-								measure = app.getMeasureAbsoluteErrorForOneYear();
-								if ($(this).text() == '2 years')
-									measure = app.getMeasureAbsoluteErrorForTwoYears();
-
-								app.map(utils.getUrlVar('indicator'), measure.value);
-							});
-						}
-						break;
-					default:
-						break;
-				};
-
-			};
-			return false;
-		});
-
+			app.list();						
+		});	
 	</script>
 	<link rel="stylesheet" href="css/site.css" type="text/css" />
 	<title>Forecast Tracking Tool</title>

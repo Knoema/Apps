@@ -1,8 +1,13 @@
 ﻿'use strict'
-var apps = apps || {};
+Knoema.Helpers.ready(function () {
+	var app = new apps.findYourNumber();
+});
 
+var apps = apps || {};
 apps.findYourNumber = function () {
 
+	Knoema.Helpers.clientId = 'fsSa7bQ=';
+	
  	this.start = 1960;
  	this.end = 2010;
 
@@ -17,35 +22,24 @@ apps.findYourNumber = function () {
 	
 	$.get('/js/meta.json?version=1.0', $.proxy(function(result){
 		this.meta = result;
+		this.load();
 	}, this));
  };
 
-apps.findYourNumber.prototype.init = function () {
 
-	utils.clientId = 'fsSa7bQ=';
-	this.appStart();
-};
-
-apps.findYourNumber.prototype.appStart = function(){
+apps.findYourNumber.prototype.load = function(){
 	this.getCountries();
 	this.getIndicators();
 	this.getTime();
-
-	$('div.step-container ul li').click($.proxy(function (item) {
-		this.selectionChanged(item.target);
-	}, this));
-
-	$('div#options div').click($.proxy(function (item) {
-		this.visualizationChanged(item.target);
-	}, this));
+	this.bindEvents();
 };
 
 apps.findYourNumber.prototype.getCountries = function () {
 
 	var container = $('div#list-country');
-	utils.setLoadingState(container);
+	this.setLoadingState(container);
 
-	$(container).getRequest('/api/1.0/meta/dataset/' + this.dataset + '/dimension/Country', $.proxy(function (result) {
+	Knoema.Helpers.get('/api/1.0/meta/dataset/' + this.dataset + '/dimension/Country', $.proxy(function (result) {
 
 		var countries = [];
 		$.each(result.items, function () {
@@ -55,19 +49,19 @@ apps.findYourNumber.prototype.getCountries = function () {
 		if (countries.length > 0) {
 
 			countries.sort();
-			var ul = $(utils.buildHTML('ul', { 'id': 'countries' })).appendTo(container);
+			var ul = $(Knoema.Helpers.buildHTML('ul', { 'id': 'countries' })).appendTo(container);
 
 			var capital = '';
 			$.each(countries, $.proxy(function (index, item) {
 
 				if (item.substring(0, 1) != capital) {
 					capital = item.substring(0, 1);
-					$(utils.buildHTML('li', { 'class': 'capital' }))
+					$(Knoema.Helpers.buildHTML('li', { 'class': 'capital' }))
 						.appendTo(ul)
 							.append(capital);
 				};
 
-				$(utils.buildHTML('li', { 'id': this.getKey(result, item) }))
+				$(Knoema.Helpers.buildHTML('li', { 'id': this.getKey(result, item) }))
 					.appendTo(ul)
 						.append(item);
 			}, this));
@@ -77,7 +71,7 @@ apps.findYourNumber.prototype.getCountries = function () {
 			}, this));
 		};
 
-		utils.removeLoadingState(container);
+		this.removeLoadingState(container);
 
 	}, this));
 };
@@ -85,10 +79,10 @@ apps.findYourNumber.prototype.getCountries = function () {
 apps.findYourNumber.prototype.getIndicators = function () {
 
 	var container = $('div#list-indicator');
-	utils.setLoadingState(container);
+	this.setLoadingState(container);
 
-	var ul = $(utils.buildHTML('ul', { 'id': 'indicators' })).appendTo(container);
-	$(container).getRequest('/api/1.0/meta/dataset/' + this.dataset + '/dimension/' + this.dimension, $.proxy(function (result) {		
+	var ul = $(Knoema.Helpers.buildHTML('ul', { 'id': 'indicators' })).appendTo(container);
+	Knoema.Helpers.get('/api/1.0/meta/dataset/' + this.dataset + '/dimension/' + this.dimension, $.proxy(function (result) {		
 		
 		this.indicators = result.items;		
 		var topic = { "id" : -1};
@@ -100,12 +94,12 @@ apps.findYourNumber.prototype.getIndicators = function () {
 			
 				if (topic.id != item.topic){
 					topic = this.getTopic(item.topic);
-					$(utils.buildHTML('li', { 'class': 'capital'}))
+					$(Knoema.Helpers.buildHTML('li', { 'class': 'capital'}))
 						.appendTo(ul)
 							.append(topic.name);
 				};
 				
-				$(utils.buildHTML('li',
+				$(Knoema.Helpers.buildHTML('li',
 					{
 						'id': indicator.key,
 						'unit': this.getUnits(item.name)					
@@ -117,16 +111,16 @@ apps.findYourNumber.prototype.getIndicators = function () {
 			};
 
 		}, this));
-		utils.removeLoadingState(container);
+		this.removeLoadingState(container);
 	}, this));
 };
 
 apps.findYourNumber.prototype.getTime = function () {
 
 	var container = $('div#list-time');
-	var ul = $(utils.buildHTML('ul', { 'id': 'time' })).appendTo(container);
+	var ul = $(Knoema.Helpers.buildHTML('ul', { 'id': 'time' })).appendTo(container);
 	for (var i = this.end; i > this.start; i--) {
-		$(utils.buildHTML('li', { 'id': i }))
+		$(Knoema.Helpers.buildHTML('li', { 'id': i }))
 			.appendTo(ul)
 				.append(i);
 	};
@@ -141,9 +135,9 @@ apps.findYourNumber.prototype.getNumber = function () {
 
 		// Get number
 		var container = $('div#result');
-		utils.setLoadingState(container);
+		this.setLoadingState(container);
 
-		$(container).postRequest(dataDescriptor, $.proxy(function (pivotResponse) {
+		Knoema.Helpers.post(dataDescriptor, $.proxy(function (pivotResponse) {
 
 			$(container).html('');
 			$(container).removeClass();
@@ -153,11 +147,11 @@ apps.findYourNumber.prototype.getNumber = function () {
 				$(container).addClass('number');
 
 				// Round number and devide into digits
-				var number = utils.roundToNDecimalPlaces(pivotResponse.data[0].Value, 2);
+				var number = Knoema.Helpers.roundToNDecimalPlaces(pivotResponse.data[0].Value, 2);
 				$(container).append(number.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 '))
 
 				// Append to container
-				$(utils.buildHTML('div', { 'class': 'unit' }))
+				$(Knoema.Helpers.buildHTML('div', { 'class': 'unit' }))
 					.appendTo(container)
 						.text(this.unit);		
 			
@@ -165,12 +159,12 @@ apps.findYourNumber.prototype.getNumber = function () {
 			else {
 
 				// Show no result message
-				$(utils.buildHTML('div', { 'class': 'no-number' }))
+				$(Knoema.Helpers.buildHTML('div', { 'class': 'no-number' }))
 				.appendTo(container)
 					.html('Your current selection does not contain any data');
 			};
 
-			utils.removeLoadingState(container);
+			this.removeLoadingState(container);
 
 		}, this));
 	};
@@ -221,18 +215,18 @@ apps.findYourNumber.prototype.visualizationChanged = function (item) {
 apps.findYourNumber.prototype.displayDimensionFields = function (indicator) {
 	
 	$('div#visualization').html('');	
-	var container = $(utils.buildHTML('div', {'class':'fields'})).appendTo($('div#visualization'));
+	var container = $(Knoema.Helpers.buildHTML('div', {'class':'fields'})).appendTo($('div#visualization'));
 	
 	for (var prop in indicator.fields){
 		if (prop == 'long definition'){
-			var field = $(utils.buildHTML('div', {'class':'field'})).appendTo(container);
-			$(utils.buildHTML('span', "Definition:", {'class': 'property'})).appendTo(field);
-			$(utils.buildHTML('span', indicator.fields[prop])).appendTo(field);
+			var field = $(Knoema.Helpers.buildHTML('div', {'class':'field'})).appendTo(container);
+			$(Knoema.Helpers.buildHTML('span', "Definition:", {'class': 'property'})).appendTo(field);
+			$(Knoema.Helpers.buildHTML('span', indicator.fields[prop])).appendTo(field);
 		}
 		else if (prop == 'source'){
-			var field = $(utils.buildHTML('div', {'class':'field'})).appendTo(container);
-			$(utils.buildHTML('span', "Source:", {'class': 'property'})).appendTo(field);
-			$(utils.buildHTML('span', indicator.fields[prop])).appendTo(field);
+			var field = $(Knoema.Helpers.buildHTML('div', {'class':'field'})).appendTo(container);
+			$(Knoema.Helpers.buildHTML('span', "Source:", {'class': 'property'})).appendTo(field);
+			$(Knoema.Helpers.buildHTML('span', indicator.fields[prop])).appendTo(field);
 		}
 	};
 };
@@ -277,7 +271,7 @@ apps.findYourNumber.prototype.chart = function (container) {
 		}
 	};
 
-	$(container).gadgetRequest(data);
+	$(container).gadget(data);
 };
 
 apps.findYourNumber.prototype.table = function (container) {
@@ -323,13 +317,13 @@ apps.findYourNumber.prototype.table = function (container) {
 		}
 	};
 
-	$(container).gadgetRequest(data);
+	$(container).gadget(data);
 };
 
 apps.findYourNumber.prototype.map = function (container) {
 	
-	utils.setLoadingState(container);
-	$(container).getRequest('/api/1.0/meta/dataset/' + this.dataset + '/dimension/Country', $.proxy(function (result) {
+	this.setLoadingState(container);
+	Knoema.Helpers.get('/api/1.0/meta/dataset/' + this.dataset + '/dimension/Country', $.proxy(function (result) {
 
 		var countries = [];
 		$.each(result.items, function () {
@@ -350,8 +344,8 @@ apps.findYourNumber.prototype.map = function (container) {
 			}
 		};
 
-		$(container).gadgetRequest(data);
-		utils.removeLoadingState(container);
+		$(container).gadget(data);
+		this.removeLoadingState(container);
 
 	}, this));
 };
@@ -431,7 +425,16 @@ apps.findYourNumber.prototype.isValidParameters = function () {
 	else return false;
 };
 
-apps.findYourNumber.prototype.applyFilters = function(){
+apps.findYourNumber.prototype.bindEvents = function(){
+
+	$('div.step-container ul li').click($.proxy(function (item) {
+		this.selectionChanged(item.target);
+	}, this));
+
+	$('div#options div').click($.proxy(function (item) {
+		this.visualizationChanged(item.target);
+	}, this));
+	
 	$('input#filter-country, input#filter-indicator, input#filter-time').mousedown(function () {
 		$(this).css('color', '#222');
 		if ($(this).val() == 'Just type...')
@@ -452,3 +455,22 @@ apps.findYourNumber.prototype.applyFilters = function(){
 	});
 };
 
+apps.findYourNumber.prototype.setLoadingState = function (container) {
+
+		var div = $('<div class="loading"><img src="img/loading.gif"/></div>');
+
+		var initialPosition = $(container).css("position");
+		if (initialPosition == "static") {
+			$(container).css("position", "relative");
+		}
+		$(div).appendTo($(container));
+
+		var img = div.find("img");
+		img.css("position", "relative").css("top", ($(container).height() - img.height()) / 2);
+
+		div.fadeIn(1000);
+};	
+
+apps.findYourNumber.prototype.removeLoadingState= function (container) {
+		$(container).find('div.loading').remove();
+};
