@@ -1,0 +1,240 @@
+﻿{
+	"topics" : [
+		{
+			"id": 0, 
+			"name": "Economics"
+		},
+		{
+			"id": 1, 
+			"name": "Health"
+		},
+		{
+			"id": 2, 
+			"name": "Education"
+		},
+		{
+			"id": 3, 
+			"name": "Land use"
+		},
+		{
+			"id": 4, 
+			"name": "Energy"
+		},
+		{
+			"id": 5, 
+			"name": "Enviroment"
+		},
+		{
+			"id": 6, 
+			"name": "Water"
+		},
+		{
+			"id": 7, 
+			"name": "Infrastructure & Technology"
+		},
+		{
+			"id": 8, 
+			"name": "Population, Density & Urbanization"
+		}
+	], 
+	"indicators" :[
+		{
+			"name": "GDP growth (annual %)",
+			"topic": 0
+		},
+		{
+			"name": "GDP (current US$)",
+			"topic": 0
+		},
+		{
+			"name": "GDP per capita (current US$)",
+			"topic": 0
+		},
+		{
+			"name": "Total reserves (includes gold, current US$)",
+			"topic": 0
+		},
+		{
+			"name": "Current account balance (% of GDP)",
+			"topic": 0
+		},
+		{
+			"name": "Population, total",
+			"topic": 8
+		},
+		{
+			"name": "Population growth (annual %)",
+			"topic": 8
+		},
+		{
+			"name": "Population density (people per sq. km of land area)",
+			"topic": 8
+		},
+		{
+			"name": "Population in urban agglomerations of more than 1 million (% of total population)",
+			"topic": 8
+		},
+		{
+			"name": "Urban population (% of total)",
+			"topic": 8
+		},
+		{
+			"name": "Labor force, total",
+			"topic": 8
+		},
+		{
+			"name": "Health expenditure, total (% of GDP)",
+			"topic": 1
+		},
+		{
+			"name": "Life expectancy at birth, total (years)",
+			"topic": 1
+		},
+		{
+			"name": "Mortality rate, under-5 (per 1,000)",
+			"topic": 1
+		},
+		{
+			"name": "Gross intake rate in grade 1, total (% of relevant age group)",
+			"topic": 2
+		},
+		{
+			"name": "Public spending on education, total (% of GDP)",
+			"topic": 2
+		},
+		{
+			"name": "Pupil-teacher ratio, primary",
+			"topic": 2
+		},
+		{
+			"name": "Literacy rate, adult total (% of people ages 15 and above)",
+			"topic": 2
+		},
+		{
+			"name": "Surface area (sq. km)",
+			"topic": 3
+		},
+		{
+			"name": "Land area (sq. km)",
+			"topic": 3
+		},
+		{
+			"name": "Forest area (% of land area)",
+			"topic": 3
+		},
+		{
+			"name": "Agricultural land (% of land area)",
+			"topic": 3
+		},
+		{
+			"name": "Agricultural land (sq. km)",
+			"topic": 3
+		},
+		{
+			"name": "Energy use (kt of oil equivalent)",
+			"topic": 4
+		},
+		{
+			"name": "Energy use (kg of oil equivalent per capita)",
+			"topic": 4
+		},
+		{
+			"name": "Energy use (kg of oil equivalent) per $1,000 GDP (constant 2005 PPP)",
+			"topic": 4
+		},
+		{
+			"name": "Fossil fuel energy consumption (% of total)",
+			"topic": 4
+		},
+		{
+			"name": "CO2 emissions (kg per PPP $ of GDP)",
+			"topic": 5
+		},
+		{
+			"name": "CO2 emissions (kt)",
+			"topic": 5
+		},
+		{
+			"name": "Organic water pollutant (BOD) emissions (kg per day)",
+			"topic": 5
+		},
+		{
+			"name": "Annual freshwater withdrawals, total (% of internal resources)",
+			"topic": 6
+		},
+		{
+			"name": "Annual freshwater withdrawals, total (billion cubic meters)",
+			"topic": 6
+		},
+		{
+			"name": "Mobile cellular subscriptions (per 100 people)",
+			"topic": 7
+		},
+		{
+			"name": "Internet users (per 100 people)",
+			"topic": 7
+		},
+		{
+			"name": "Passenger cars (per 1,000 people)",
+			"topic": 7
+		},
+		{
+			"name": "Research and development expenditure (% of GDP)",
+			"topic": 7
+		}
+	],
+	"countries" :[
+	"Algeria",
+	"Angola",
+	"Benin",
+	"Botswana",
+	"Burkina Faso",
+	"Burundi",
+	"Cameroon",
+	"Cape Verde",
+	"Central African Republic",
+	"Chad",
+	"Comoros",
+	"Congo",
+	"Democratic Republic of Congo",
+	"Cote d'Ivoire",
+	"Djibouti",
+	"Egypt",
+	"Eritrea",
+	"Equatorial Guinea",
+	"Ethiopia",
+	"Gabon",
+	"Gambia",
+	"Ghana",
+	"Guinea",
+	"Guinea-Bissau",
+	"Kenya",
+	"Lesotho",
+	"Liberia",
+	"Libya",
+	"Madagascar",
+	"Malawi",
+	"Mali",
+	"Mauritania",
+	"Mauritius",
+	"Morocco",
+	"Mozambique",
+	"Namibia",
+	"Niger",
+	"Nigeria",
+	"Rwanda",
+	"São Tomé and Principe",
+	"Senegal",
+	"Seychelles",
+	"Sierra Leone",
+	"Somalia",
+	"South Africa",
+	"Sudan",
+	"Swaziland",
+	"Tanzania",
+	"Togo",
+	"Tunisia",
+	"Uganda",
+	"Zambia",
+	"Zimbabwe"]	
+}
