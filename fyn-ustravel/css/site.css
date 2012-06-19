@@ -1,0 +1,255 @@
+﻿body
+{
+	font-family: Calibri, Tahoma;
+	font-size: 16px;
+}
+
+div#app-holder div#steps
+{
+	height: 30px;
+	background-color: #F0F0F0;
+	width:900px;
+}
+
+div#app-holder div#steps div
+{
+	display: inline-block;
+}
+
+div#app-holder div#steps span
+{
+	font-weight: bold;
+	padding: 5px 0 0 10px;
+	height: 25px;
+	float: left;
+}
+
+div#app-holder div#steps img
+{
+	float: right;
+}
+
+div#app-holder div#steps div#country
+{
+	width: 185px;
+}
+
+div#app-holder div#steps div#indicator
+{
+	width: 335px;
+}
+
+div#app-holder div#steps div#time
+{
+	width: 90px;
+}
+
+div#app-holder div#steps div#number
+{
+	width: 255px;
+}
+
+div#app-holder div#steps div#number div
+{
+	float: left;
+	display: inline-block;
+	height: 25px;
+	margin: 5px 0 0 10px;
+	font-weight: bold;
+}
+
+div#app-holder div.step-container
+{
+	margin-top: 10px;
+	border-right: 1px solid #D2D2D2;
+	float: left;
+	font-size: 10pt;
+}
+
+div#app-holder div.step-container.country
+{
+	width:180px;
+}
+
+div#app-holder div.step-container.country input
+{
+	height: 25px;
+	padding: 0px;
+	color: #c8c8c8;
+	width: 170px;
+}
+
+div#app-holder div.step-container.country div
+{
+	margin: 10px 10px 0 0px;
+}
+
+div#app-holder div.step-container.indicator
+{
+	width: 335px;
+}
+
+div#app-holder div.step-container.indicator input
+{
+	height: 25px;
+	padding: 0px;
+	color: #c8c8c8;
+	width: 315px;
+	margin:0px 10px;
+}
+
+div#app-holder div.step-container.indicator div
+{
+	margin: 10px 10px 0 10px;
+}
+
+div#app-holder div.step-container.time
+{
+	width: 95px;
+}
+
+div#app-holder div.step-container.time input
+{
+	height: 25px;
+	padding: 0px;
+	color: #c8c8c8;
+	width: 75px;
+	margin: 0px 10px 0 10px;
+}
+
+div#app-holder div.step-container.time div
+{
+	margin: 10px 10px 0 10px;
+}
+
+div.step-container.country div, div.step-container.indicator div, div.step-container.time div
+{
+	height: 400px;
+	overflow-y: auto;
+}
+
+div#app-holder div.last-step-container
+{
+	display: inline-block;
+	width: 265px;
+	height: 445px;
+	float: none;
+	font-size: 10pt;
+	margin-top: 10px;
+}
+
+div#app-holder div.last-step-container div#options
+{
+	background-color: #F0F0F0;
+	padding: 5px;
+	margin: 0px 0 0 10px;
+	
+}
+
+div#app-holder div.last-step-container div#options div
+{
+	display: inline-block;
+	margin-left: 20px;
+	cursor: pointer;
+}
+
+div#app-holder div.last-step-container div#options img
+{
+	float: left;
+	padding-right: 5px;
+}
+
+div#app-holder div.last-step-container div.number
+{
+	margin: 0px 0 10px 10px;
+	font-weight: bold;
+	font-size: 18pt;
+	border: 1px dashed #D2D2D2;
+	text-align: center;	
+}
+
+div#app-holder div.last-step-container div.unit
+{
+	font-size:10pt;
+	margin-top:5px;	
+	font-weight:normal;
+}
+
+div#app-holder div.last-step-container div.no-number
+{
+	margin: 0px 0 10px 10px;
+	border: 1px dashed #D2D2D2;
+	text-align: center;
+	font-size: 10pt;
+	font-weight: normal;
+}
+
+div#app-holder div.last-step-container div.map, div.last-step-container div.chart
+{
+	width: 245px;
+	height: 150px;
+	margin: 10px 0 0 10px;
+}
+
+div#app-holder div.last-step-container div.table
+{
+	width: 245px;
+	height: 330px;
+	margin: 10px 0 0 20px;
+}
+
+div#app-holder div.last-step-container div#result div.chart
+{
+	width: 245px;
+	height: 150px;
+	margin: 10px 0 0 10px;
+}
+
+div#app-holder div.step-container ul
+{
+	padding: 0px;
+	margin: 0px;
+	list-style-type: none;
+}
+
+div#app-holder div.step-container ul li
+{
+	margin: 0 10px;
+	padding: 2px;
+	cursor: pointer;
+}
+
+div#app-holder div.step-container ul li:hover
+{
+	background-color: #F0F0F0;
+}
+
+div#app-holder div.step-container ul li.selected
+{
+	background-color: #059BDA;
+	color:#fff;
+}
+
+div#app-holder div.step-container ul li.capital
+{
+	font-weight: bold;
+}
+
+div#app-holder div.last-step-container  div.fields
+{
+	margin:10px 10px 0 15px;
+	height:350px;
+	overflow-y:auto;
+}
+
+div#app-holder div.last-step-container  div.field 
+{
+	margin-bottom:5px;
+}
+
+div#app-holder div.last-step-container  div.field  span.property
+{
+	font-weight:bold;	
+	margin-right:5px;
+}
+
