@@ -1,4 +1,4 @@
-{
+﻿{
 	"topics" : [
 		{
 			"id": 0, 
@@ -182,6 +182,7 @@
 			"name": "Research and development expenditure (% of GDP)",
 			"topic": 7
 		}
-	]
+	],
+	"countries" :[
+	]	
 }
-

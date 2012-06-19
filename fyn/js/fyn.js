@@ -54,16 +54,23 @@ apps.findYourNumber.prototype.getCountries = function () {
 			var capital = '';
 			$.each(countries, $.proxy(function (index, item) {
 
-				if (item.substring(0, 1) != capital) {
-					capital = item.substring(0, 1);
-					$(Knoema.Helpers.buildHTML('li', { 'class': 'capital' }))
-						.appendTo(ul)
-							.append(capital);
-				};
+				var addCountry = true;
+				if (this.meta.countries.length > 0)
+					if ($.inArray(item, this.meta.countries) == -1)
+						addCountry = false;
+				
+				if (addCountry){
+					if (item.substring(0, 1) != capital) {
+						capital = item.substring(0, 1);
+						$(Knoema.Helpers.buildHTML('li', { 'class': 'capital' }))
+							.appendTo(ul)
+								.append(capital);
+					};
 
-				$(Knoema.Helpers.buildHTML('li', { 'id': this.getKey(result, item) }))
-					.appendTo(ul)
-						.append(item);
+					$(Knoema.Helpers.buildHTML('li', { 'id': this.getKey(result, item) }))
+						.appendTo(ul)
+							.append(item);
+				};
 			}, this));
 
 			$('ul#countries li').click($.proxy(function (item) {
