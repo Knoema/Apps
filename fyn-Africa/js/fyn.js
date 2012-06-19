@@ -20,7 +20,7 @@ apps.findYourNumber = function () {
  	this.meta = null;
 	this.indicators = null;
 	
-	$.get('/js/meta.json?version=1.0', $.proxy(function(result){
+	$.get('js/meta.json?version=1.0', $.proxy(function(result){
 		this.meta = result;
 		this.load();
 	}, this));
