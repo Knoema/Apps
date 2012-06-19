@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="http://dev.knoema.com/app-script?version=1.0"></script>	
+	<script type="text/javascript" src="js/fyn.js?version=1.1"></script>
+	<link rel="stylesheet" href="css/site.css" type="text/css" />
+	<title>Find your number </title>
+</head>
+<body>
+	<div id="app-holder">
+		<div id="steps">
+			<div id="country">
+				<span>Country</span>
+				<img src="img/separator.png" alt="" />
+			</div>
+			<div id="indicator">
+				<span>Indicator</span>
+				<img src="img/separator.png" alt="" />
+			</div>
+			<div id="time">
+				<span>Time</span>
+				<img src="img/separator.png" alt="" />
+			</div>
+			<div id="number">
+				<div>
+					Number</div>
+			</div>
+		</div>
+		<div class="step-container country">
+			<input type="text" id="filter-country" value="Just type..." />
+			<div id="list-country">
+			</div>
+		</div>
+		<div class="step-container indicator">
+			<input type="text" id="filter-indicator" value="Just type..." />
+			<div id="list-indicator">
+			</div>
+		</div>
+		<div class="step-container time">
+			<input type="text" id="filter-time" value="Just type..." />
+			<div id="list-time">
+			</div>
+		</div>
+		<div class="last-step-container">
+			<div id="result">
+			</div>
+			<div id="options">
+				<div>
+					<img src="img/chart.png" alt="chart" />
+					<span>Chart</span>
+				</div>
+				<div>
+					<img src="img/table.png" alt="table" />
+					<span>Table</span>
+				</div>
+				<div>
+					<img src="img/map.png" alt="map" />
+					<span>Map</span>
+				</div>
+			</div>
+			<div id="visualization">
+			</div>
+		</div>
+	</div>
+</body>
+</html>
