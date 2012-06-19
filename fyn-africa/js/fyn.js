@@ -20,8 +20,8 @@ apps.findYourNumber = function () {
  	this.meta = null;
 	this.indicators = null;
 	
-	$.get('js/meta.json?version=1.0', $.proxy(function(result){
-		this.meta = $.parseJSON(result);
+	$.getJSON('js/meta.json?version=1.1', $.proxy(function(result){
+		this.meta = result;
 		this.load();
 	}, this));
  };
@@ -342,7 +342,14 @@ apps.findYourNumber.prototype.map = function (container) {
 			gadget: {
 				dataDescriptor: this.getDataDescriptor(countries, [this.indicator], this.time),
 				gadgetClass: "Knoema.Map",
-				viewState: {},
+				viewState: {
+					"visibleRegion":"africa",
+					"colorSelection":{
+						"startColor":"c3d69b",
+						"endColor":"ff0000",
+						"intervalCount":3
+					}
+				},
 				naked: true
 			},
 			size: {

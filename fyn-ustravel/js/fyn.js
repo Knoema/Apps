@@ -21,7 +21,7 @@ apps.findYourNumber = function () {
  	this.meta = null;
 	this.indicators = null;
 	
-	$.getJSON('js/meta.json?version=1.1', $.proxy(function(result){
+	$.getJSON('js/meta.json?version=1.2', $.proxy(function(result){
 		
 		this.meta = result;
 		
@@ -361,7 +361,14 @@ apps.findYourNumber.prototype.map = function (container) {
 			gadget: {
 				dataDescriptor: this.getDataDescriptor(countries, [this.indicator], this.time),
 				gadgetClass: "Knoema.Map",
-				viewState: {},
+				viewState: {
+					"visibleRegion":"usaStates",
+					"colorSelection":{
+						"startColor":"c3d69b",
+						"endColor":"ff0000",
+						"intervalCount":3
+					}
+				},
 				naked: true
 			},
 			size: {
