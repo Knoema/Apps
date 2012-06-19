@@ -21,7 +21,7 @@ apps.findYourNumber = function () {
 	this.indicators = null;
 	
 	$.get('js/meta.json?version=1.0', $.proxy(function(result){
-		this.meta = result;
+		this.meta = $.parseJSON(result);
 		this.load();
 	}, this));
  };
