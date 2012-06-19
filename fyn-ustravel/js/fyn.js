@@ -65,7 +65,7 @@ apps.findYourNumber.prototype.getCountries = function () {
 			var ul = $(Knoema.Helpers.buildHTML('ul', { 'id': 'countries' })).appendTo(container);
 
 			// US 
-			$(Knoema.Helpers.buildHTML('li', { 'class': 'capital', 'id': '1000000' }))
+			$(Knoema.Helpers.buildHTML('li', {'id': '1000000' }))
 				.appendTo(ul)
 					.append('US');
 					
@@ -92,7 +92,8 @@ apps.findYourNumber.prototype.getCountries = function () {
 			}, this));
 
 			$('ul#countries li').click($.proxy(function (item) {
-				this.selectionChanged(item.target);
+				if (!$(item.target).hasClass('capital'))
+					this.selectionChanged(item.target);
 			}, this));
 		};
 
