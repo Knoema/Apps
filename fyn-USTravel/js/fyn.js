@@ -65,6 +65,12 @@ apps.findYourNumber.prototype.getCountries = function () {
 			var ul = $(Knoema.Helpers.buildHTML('ul', { 'id': 'countries' })).appendTo(container);
 
 			var capital = '';
+			
+			// US 
+			$(Knoema.Helpers.buildHTML('li', { 'class': 'capital', 'id': '1000000' }))
+				.appendTo(ul)
+					.append('US');
+							
 			$.each(countries, $.proxy(function (index, item) {
 
 				var addCountry = true;
