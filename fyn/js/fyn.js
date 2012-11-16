@@ -144,7 +144,7 @@ apps.findYourNumber.prototype.getNumber = function () {
 		var container = $('div#result');
 		this.setLoadingState(container);
 
-		Knoema.Helpers.post(dataDescriptor, $.proxy(function (pivotResponse) {
+		Knoema.Helpers.post('/api/1.0/data/pivot', dataDescriptor, $.proxy(function (pivotResponse) {
 
 			$(container).html('');
 			$(container).removeClass();
