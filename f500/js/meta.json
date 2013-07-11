@@ -1,0 +1,104 @@
+﻿{
+	"topics" : [
+		{
+			"id": 0, 
+			"name": "Income Statement"
+		},
+		{
+			"id": 1, 
+			"name": "Assets"
+		},
+		{
+			"id": 2, 
+			"name": "Liabilities and Shareholders' Equity"
+		}
+	], 
+	"indicators" :[
+		{
+			"name": "Operating Revenue",
+			"topic": 0
+		},
+		{
+			"name": "Cost of Sales With Depreciation",
+			"topic": 0
+		},
+		{
+			"name": "Operating Income",
+			"topic": 0
+		},
+		{
+			"name": "EBITDA",
+			"topic": 0
+		},
+		{
+			"name": "Depreciation",
+			"topic": 0
+		},
+		{
+			"name": "Operating Profit After Depreciation",
+			"topic": 0
+		},
+		{
+			"name": "EBIT",
+			"topic": 0
+		},
+		{
+			"name": "Pre-Tax Income",
+			"topic": 0
+		},
+		{
+			"name": "Total Net Income",
+			"topic": 0
+		},
+		{
+			"name": "Basic EPS - Total",
+			"topic": 0
+		},
+		{
+			"name": "Diluted EPS - Total",
+			"topic": 0
+		},
+		{
+			"name": "Dividends Paid Per Share (DPS)",
+			"topic": 0
+		},
+		{
+			"name": "Cash & Equivalents",
+			"topic": 1
+		},
+		{
+			"name": "Total Current Assets",
+			"topic": 1
+		},
+		{
+			"name": "Total Assets",
+			"topic": 1
+		},
+		{
+			"name": "Total Current Liabilities",
+			"topic": 2
+		},
+		{
+			"name": "Total Liabilities",
+			"topic": 2
+		},
+		{
+			"name": "Total Equity",
+			"topic": 2
+		},
+		{
+			"name": "Total Liabilities & Stock Equity",
+			"topic": 2
+		},
+		{
+			"name": "Cash Flow",
+			"topic": 2
+		},
+		{
+			"name": "Working Capital",
+			"topic": 2
+		}
+	],
+	"companies" :[
+	]	
+}
